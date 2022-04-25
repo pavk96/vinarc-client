@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'login/LoginBody.dart';
+import 'LoginBody.dart';
 
 class LoginLayout extends StatelessWidget {
   const LoginLayout({Key? key}) : super(key: key);

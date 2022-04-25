@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vinarc/Theme/theme.dart';
-import 'package:vinarc/pages/LoginLayout.dart';
+import 'package:vinarc/pages/login/LoginLayout.dart';
 
 void main() {
   runApp(const MyApp());
