@@ -20,7 +20,7 @@ class LoginLayout extends StatelessWidget {
             )),
         title: Padding(
           child: Text("로그인", style: GoogleFonts.roboto(fontSize: 18)),
-          padding: EdgeInsets.only(left: 32),
+          padding: EdgeInsets.only(left: 0),
         ),
         elevation: 0,
         centerTitle: false,

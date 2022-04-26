@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'dart:convert';
 
 class LoginBody extends StatefulWidget {
   const LoginBody({Key? key}) : super(key: key);
@@ -11,8 +14,18 @@ class LoginBody extends StatefulWidget {
 class _LoginBodyState extends State<LoginBody> {
   bool? isAutoLogin = false;
   bool? isSaveId = false;
+
+  String n_name = '';
+
+  String n_gender = "";
+
+  String n_birth = "";
+
   @override
   Widget build(BuildContext context) {
+    TextEditingController userEmailController = TextEditingController();
+    TextEditingController userPasswordController = TextEditingController();
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     double SIDEPADDINGSIZE = width / 13.8;
@@ -39,6 +52,7 @@ class _LoginBodyState extends State<LoginBody> {
                 width: double.infinity,
                 height: TEXTFIELDTOPSIZE,
                 child: TextField(
+                  controller: userEmailController,
                   decoration: InputDecoration(
                       hintText: "이메일을 입력해주세요",
                       hintStyle: TextStyle(
@@ -55,6 +69,8 @@ class _LoginBodyState extends State<LoginBody> {
                 width: double.infinity,
                 height: TEXTFIELDTOPSIZE,
                 child: TextField(
+                    obscureText: true,
+                    controller: userPasswordController,
                     decoration: InputDecoration(
                         hintText: "비밀번호를 입력해주세요",
                         hintStyle: TextStyle(
@@ -121,7 +137,12 @@ class _LoginBodyState extends State<LoginBody> {
             height: LOGINBUTTONHEIGHT,
             width: double.infinity,
             child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  String email = userEmailController.text;
+                  String password = userPasswordController.text;
+                  getData(email, password);
+                  print("로그인버튼이 눌려졌습니다." + email + password);
+                },
                 child: Text("로그인", style: TextStyle(fontSize: H3FONTSIZE)),
                 style: TextButton.styleFrom(
                     primary: Colors.white,
@@ -151,7 +172,9 @@ class _LoginBodyState extends State<LoginBody> {
                             primary: Colors.black,
                           ),
                           child: Text('네이버'),
-                          onPressed: () {},
+                          onPressed: () {
+                            // _login_naver();
+                          },
                         ),
                       ],
                     )),
@@ -211,4 +234,41 @@ class _LoginBodyState extends State<LoginBody> {
                   ])))
         ]));
   }
+
+  getData(String email, String password) async {
+    print(email + " " + password);
+    var result = await http.post(Uri.parse('http://flyingstone.me/myapi/user'),
+        headers: <String, String>{
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods":
+              "POST, GET, OPTIONS, PUT, DELETE, HEAD"
+        },
+        body: jsonEncode(
+            <String, String>{"user_email": email, "user_password": password}));
+    print(result.statusCode);
+    if (result.statusCode == 201) {
+      print(result.body);
+    } else {
+      throw Exception('실패함ㅅㄱ');
+    }
+  }
+
+  // void _login_naver() async {
+  //   NaverLoginResult res = await FlutterNaverLogin.logIn();
+  //   setState(() {
+  //     n_name = res.account.nickname;
+  //     n_gender = res.account.gender;
+  //     n_birth = res.account.birthday;
+  //   });
+  // }
+
+  // void _logout_naver() {
+  //   FlutterNaverLogin.logOut();
+  //   setState(() {
+  //     n_name = "Logout되었습니다.";
+  //     n_gender = "Logout되었습니다.";
+  //     n_birth = "Logout되었습니다.";
+  //   });
+  // }
 }
