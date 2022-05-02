@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'dart:convert';
 
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
 class LoginBody extends StatefulWidget {
   const LoginBody({Key? key}) : super(key: key);
 
@@ -53,6 +56,7 @@ class _LoginBodyState extends State<LoginBody> {
                 height: TEXTFIELDTOPSIZE,
                 child: TextField(
                   controller: userEmailController,
+                  cursorColor: Color(0xFF486138),
                   decoration: InputDecoration(
                       hintText: "이메일을 입력해주세요",
                       hintStyle: TextStyle(
@@ -69,6 +73,7 @@ class _LoginBodyState extends State<LoginBody> {
                 width: double.infinity,
                 height: TEXTFIELDTOPSIZE,
                 child: TextField(
+                    cursorColor: Color(0xFF486138),
                     obscureText: true,
                     controller: userPasswordController,
                     decoration: InputDecoration(
@@ -152,53 +157,57 @@ class _LoginBodyState extends State<LoginBody> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                    width: MediaQuery.of(context).size.width / 2.42,
-                    height: 44,
-                    decoration: BoxDecoration(
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                      width: MediaQuery.of(context).size.width / 2.42,
+                      height: 44,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          border:
+                              Border.all(color: Color(0xFFDBDBDB), width: 2)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(
+                            image: AssetImage('/img/login/naver.png'),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Colors.black,
+                            ),
+                            child: Text('네이버'),
+                            onPressed: () {
+                              // _login_naver();
+                              getData('email', 'asdf');
+                            },
+                          ),
+                        ],
+                      )),
+                  Container(
+                      width: MediaQuery.of(context).size.width / 2.4,
+                      height: 44,
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        border: Border.all(color: Color(0xFFDBDBDB), width: 2)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image(
-                          image: AssetImage('/img/login/naver.png'),
-                        ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.black,
+                        border: Border.all(color: Color(0xFFDBDBDB), width: 2),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(image: AssetImage('/img/login/facebook.png')),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Colors.black,
+                            ),
+                            child: Text('페이스북'),
+                            onPressed: () {},
                           ),
-                          child: Text('네이버'),
-                          onPressed: () {
-                            // _login_naver();
-                          },
-                        ),
-                      ],
-                    )),
-                Container(
-                    width: MediaQuery.of(context).size.width / 2.4,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Color(0xFFDBDBDB), width: 2),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image(image: AssetImage('/img/login/facebook.png')),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.black,
-                          ),
-                          child: Text('페이스북'),
-                          onPressed: () {},
-                        ),
-                      ],
-                    )),
-              ],
+                        ],
+                      )),
+                ],
+              ),
             ),
           ),
           Container(
@@ -237,30 +246,30 @@ class _LoginBodyState extends State<LoginBody> {
 
   getData(String email, String password) async {
     print(email + " " + password);
-    var result = await http.post(Uri.parse('http://flyingstone.me/myapi/user'),
-        headers: <String, String>{
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods":
-              "POST, GET, OPTIONS, PUT, DELETE, HEAD"
-        },
-        body: jsonEncode(
-            <String, String>{"user_email": email, "user_password": password}));
-    print(result.statusCode);
-    if (result.statusCode == 201) {
-      print(result.body);
-    } else {
-      throw Exception('실패함ㅅㄱ');
-    }
+    launchUrlString('https://flyingstone.me/myapi/user/auth/naver');
+    // var result = await http.get(
+    //   Uri.parse('https://flyingstone.me/myapi/user/auth/naver'),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Access-Control-Allow-Origin": "*",
+    //     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
+    //   },
+    // );
+    // print(result.statusCode);
+    // if (result.statusCode == 200) {
+    //   print(result.body);
+    // } else {
+    //   throw Exception('실패함ㅅㄱ');
+    // }
   }
 
   // void _login_naver() async {
   //   NaverLoginResult res = await FlutterNaverLogin.logIn();
-  //   setState(() {
-  //     n_name = res.account.nickname;
-  //     n_gender = res.account.gender;
-  //     n_birth = res.account.birthday;
-  //   });
+  //   // setState(() {
+  //   //   n_name = res.account.nickname;
+  //   //   n_gender = res.account.gender;
+  //   //   n_birth = res.account.birthday;
+  //   // });
   // }
 
   // void _logout_naver() {

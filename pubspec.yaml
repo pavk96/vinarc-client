@@ -36,6 +36,8 @@ dependencies:
     google_fonts: ^2.3.1
     http: ^0.13.4
     flutter_naver_login: ^1.4.0
+    url_launcher: ^6.1.0
+    footer: ^0.0.4
 
 dev_dependencies:
     flutter_test:
@@ -76,7 +78,7 @@ flutter:
     fonts:
         - family: NotoSansCJKkr
           fonts:
-              - asset: assets\fonts\NotoSansCJKkr-VF.ttf
+              - asset: assets/fonts/NotoSansCJKkr-VF.ttf
     #       - asset: fonts/Schyler-Italic.ttf
     #         style: italic
     #   - family: Trajan Pro
