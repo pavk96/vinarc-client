@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:footer/footer.dart';
+import 'package:footer/footer_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vinarc/pages/mypage/components/ProfileAndAddressAppBarLeading.dart';
 
+import '../layout/Footer.dart';
 import 'MyPageBody.dart';
 
 class MyPage extends StatelessWidget {
@@ -21,7 +24,15 @@ class MyPage extends StatelessWidget {
                 fontWeight: FontWeight.w500)),
         elevation: 0,
       ),
-      body: SingleChildScrollView(child: MyPageBody()),
+      body: FooterView(
+          flex: 5,
+          children: [
+            SingleChildScrollView(child: MyPageBody()),
+          ],
+          footer: Footer(
+            child: FooterContent(),
+            backgroundColor: Color(0xFFc3c3c3),
+          )),
     );
   }
 }

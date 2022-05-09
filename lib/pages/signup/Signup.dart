@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:vinarc/pages/login/LoginLayout.dart';
 
-import 'LoginBody.dart';
+import 'SignupBody.dart';
 
-class LoginLayout extends StatelessWidget {
-  const LoginLayout({Key? key}) : super(key: key);
+class Signup extends StatelessWidget {
+  const Signup({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +23,13 @@ class LoginLayout extends StatelessWidget {
               },
             )),
         title: Padding(
-          child: Text("로그인", style: GoogleFonts.roboto(fontSize: 18)),
+          child: Text("회원가입", style: GoogleFonts.roboto(fontSize: 18)),
           padding: EdgeInsets.only(left: SIDEPADDINGSIZELOGINBUTTON),
         ),
         elevation: 0,
         centerTitle: false,
       ),
-      body: SingleChildScrollView(child: LoginBody()),
+      body: SingleChildScrollView(child: SignUpBody()),
     );
   }
 }

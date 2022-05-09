@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:footer/footer.dart';
 import 'package:footer/footer_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:vinarc/pages/layout/Footer.dart';
 import 'package:vinarc/pages/mypage/components/ProfileAndAddressAppBarLeading.dart';
 
 class ProfileAndAddressLayout extends StatelessWidget {
@@ -37,17 +38,12 @@ class ProfileAndAddressLayout extends StatelessWidget {
         ),
       ),
       body: FooterView(
-        children: [bodyWidget],
-        footer: Footer(
-          child: SizedBox(
-              width: double.infinity,
-              height: 182,
-              child: Row(
-                children: [],
-              )),
-          backgroundColor: Color(0xFFc3c3c3),
-        ),
-      ),
+          flex: 5,
+          children: [bodyWidget],
+          footer: Footer(
+            child: FooterContent(),
+            backgroundColor: Color(0xFFc3c3c3),
+          )),
     );
   }
 }

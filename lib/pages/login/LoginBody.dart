@@ -58,7 +58,7 @@ class _LoginBodyState extends State<LoginBody> {
                   controller: userEmailController,
                   cursorColor: Color(0xFF486138),
                   decoration: InputDecoration(
-                      hintText: "이메일을 입력해주세요",
+                      hintText: "아이디를 입력해주세요",
                       hintStyle: TextStyle(
                           color: Color(0xFF999999), fontSize: MAINFONTSIZE),
                       border: InputBorder.none,
@@ -181,7 +181,7 @@ class _LoginBodyState extends State<LoginBody> {
                             child: Text('네이버'),
                             onPressed: () {
                               // _login_naver();
-                              getData('email', 'asdf');
+                              _login_naver();
                             },
                           ),
                         ],
@@ -236,41 +236,42 @@ class _LoginBodyState extends State<LoginBody> {
                       text: "아직 회원이 아니신가요? ",
                       style: TextStyle(color: Color(0xFF999999)),
                       children: [
-                    TextSpan(
-                        text: "회원가입",
-                        style: TextStyle(
-                            color: Colors.black, fontSize: MAINFONTSIZE)),
+                    WidgetSpan(
+                        child: GestureDetector(
+                      onTap: () {
+                        // Navigator.pushNamed(context, '/signup');
+                        // goBootpayRequest(context);
+                      },
+                      child: Text("회원가입",
+                          style: TextStyle(
+                              color: Colors.black, fontSize: MAINFONTSIZE)),
+                    ))
                   ])))
         ]));
   }
 
   getData(String email, String password) async {
     print(email + " " + password);
-    launchUrlString('https://flyingstone.me/myapi/user/auth/naver');
-    // var result = await http.get(
-    //   Uri.parse('https://flyingstone.me/myapi/user/auth/naver'),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Access-Control-Allow-Origin": "*",
-    //     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
-    //   },
-    // );
-    // print(result.statusCode);
-    // if (result.statusCode == 200) {
-    //   print(result.body);
-    // } else {
-    //   throw Exception('실패함ㅅㄱ');
-    // }
+
+    var result = await http.get(
+      Uri.parse('https://flyingstone.me/myapi/user/auth/login'),
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
+      },
+    );
+    print(result.statusCode);
+    if (result.statusCode == 200) {
+      print(result.body);
+    } else {
+      throw Exception('실패함ㅅㄱ');
+    }
   }
 
-  // void _login_naver() async {
-  //   NaverLoginResult res = await FlutterNaverLogin.logIn();
-  //   // setState(() {
-  //   //   n_name = res.account.nickname;
-  //   //   n_gender = res.account.gender;
-  //   //   n_birth = res.account.birthday;
-  //   // });
-  // }
+  void _login_naver() async {
+    launchUrlString('https://flyingstone.me/myapi/user/auth/naver');
+  }
 
   // void _logout_naver() {
   //   FlutterNaverLogin.logOut();
@@ -280,4 +281,5 @@ class _LoginBodyState extends State<LoginBody> {
   //     n_birth = "Logout되었습니다.";
   //   });
   // }
+
 }

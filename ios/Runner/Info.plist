@@ -48,5 +48,25 @@
 	<string>https</string>
 	<string>http</string>
 	</array>	
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>vinarc.co.kr</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>vinarc</string> 
+           </array>
+        </dict>
+    </array>
+	<key>NSFaceIDUsageDescription</key>
+    <string>생체인증 결제 진행시 권한이 필요합니다</string>
 </dict>
 </plist>

@@ -17,33 +17,40 @@ class Profile extends StatelessWidget {
 
   Widget bodyWidget(BuildContext context) {
     return SizedBox(
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ProfileEdit(div: "이름", value: "Umesh appu"),
-                    ProfileEdit(div: "생년월일", value: "1993.04.05"),
-                    ProfileEdit(div: "휴대폰", value: "010-5235-1321"),
-                    ProfileEdit(div: "이메일 주소", value: "example@google.com"),
-                  ]),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text("로그아웃"),
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15))),
-                  minimumSize: MaterialStateProperty.all(
-                      Size((MediaQuery.of(context).size.width - 40), 50)),
-                  backgroundColor:
-                      MaterialStateProperty.all(Color(0xFF384230))),
-            )
-          ]),
+      child: Padding(
+        padding:
+            EdgeInsets.only(top: MediaQuery.of(context).size.height / 13.8),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ProfileEdit(div: "이름", value: "Umesh appu"),
+                      ProfileEdit(div: "생년월일", value: "1993.04.05"),
+                      ProfileEdit(div: "휴대폰", value: "010-5235-1321"),
+                      ProfileEdit(div: "이메일 주소", value: "example@google.com"),
+                    ]),
+              ),
+              Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 11)),
+              ElevatedButton(
+                onPressed: () {},
+                child: Text("로그아웃"),
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15))),
+                    minimumSize: MaterialStateProperty.all(
+                        Size((MediaQuery.of(context).size.width - 50), 50)),
+                    backgroundColor:
+                        MaterialStateProperty.all(Color(0xFF384230))),
+              )
+            ]),
+      ),
     );
   }
 }

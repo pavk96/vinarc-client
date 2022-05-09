@@ -45,10 +45,12 @@ class MyPageBody extends StatelessWidget {
                                   top: TOPCOMPONENTINNERCONTENTHEIGHT / 7)),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Profile()));
+                              Navigator.pushNamed(
+                                context,
+                                '/a',
+                                // MaterialPageRoute(
+                                //     builder: (context) => Profile())
+                              );
                             },
                             child: Container(
                                 width: TOPCOMPONENTINNERCONTENTHEIGHT / 3,
@@ -97,8 +99,7 @@ class MyPageBody extends StatelessWidget {
             bottom: TOPCOMPONENTHEIGHT / 6,
             child: GestureDetector(
               onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Coupon()));
+                Navigator.pushNamed(context, '/coupon');
               },
               child: Container(
                   width: 124,
