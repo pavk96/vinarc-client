@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -15,6 +16,7 @@ class LoginBody extends StatefulWidget {
 }
 
 class _LoginBodyState extends State<LoginBody> {
+  final storage = new FlutterSecureStorage();
   bool? isAutoLogin = false;
   bool? isSaveId = false;
 
@@ -26,7 +28,7 @@ class _LoginBodyState extends State<LoginBody> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController userEmailController = TextEditingController();
+    TextEditingController userIdController = TextEditingController();
     TextEditingController userPasswordController = TextEditingController();
 
     double width = MediaQuery.of(context).size.width;
@@ -55,7 +57,7 @@ class _LoginBodyState extends State<LoginBody> {
                 width: double.infinity,
                 height: TEXTFIELDTOPSIZE,
                 child: TextField(
-                  controller: userEmailController,
+                  controller: userIdController,
                   cursorColor: Color(0xFF486138),
                   decoration: InputDecoration(
                       hintText: "아이디를 입력해주세요",
@@ -143,10 +145,9 @@ class _LoginBodyState extends State<LoginBody> {
             width: double.infinity,
             child: TextButton(
                 onPressed: () {
-                  String email = userEmailController.text;
+                  String userId = userIdController.text;
                   String password = userPasswordController.text;
-                  getData(email, password);
-                  print("로그인버튼이 눌려졌습니다." + email + password);
+                  getData(userId, password);
                 },
                 child: Text("로그인", style: TextStyle(fontSize: H3FONTSIZE)),
                 style: TextButton.styleFrom(
@@ -250,11 +251,10 @@ class _LoginBodyState extends State<LoginBody> {
         ]));
   }
 
-  getData(String email, String password) async {
-    print(email + " " + password);
-
-    var result = await http.get(
+  getData(String userId, String password) async {
+    var result = await http.post(
       Uri.parse('https://flyingstone.me/myapi/user/auth/login'),
+      body: json.encode({"userId": userId, "userPassword": password}),
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
@@ -262,8 +262,9 @@ class _LoginBodyState extends State<LoginBody> {
       },
     );
     print(result.statusCode);
-    if (result.statusCode == 200) {
-      print(result.body);
+    if (result.statusCode == 201) {
+      await storage.write(key: "token", value: result.headers['refresh_token']);
+      Navigator.of(context).pushNamed("/");
     } else {
       throw Exception('실패함ㅅㄱ');
     }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bootpay/model/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:footer/footer.dart';
 import 'package:footer/footer_view.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +18,8 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  final storage = FlutterSecureStorage();
+
   // late Future post;
   // @override
   // void initState() {
@@ -49,7 +52,7 @@ class _ProfileState extends State<Profile> {
               ),
             );
           } else {
-            // print(snapshot.data.userName);
+            print(snapshot.data.userName);
             return SizedBox(
               child: Padding(
                 padding: EdgeInsets.only(
@@ -97,8 +100,16 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<UserProfilePost> _getUserProfile() async {
+    String? token = await storage.read(key: "token");
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': token.toString()
+    };
     final response = await http.get(
-        Uri.parse('http://flyingstone.me/myapi/user/profile?userId=rbwjd96'));
+        Uri.parse('http://flyingstone.me/myapi/user/profile'),
+        headers: requestHeaders);
+
     if (response.statusCode == 200) {
       return UserProfilePost.fromJson(json.decode(response.body));
     } else {
