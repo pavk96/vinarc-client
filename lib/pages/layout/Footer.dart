@@ -22,15 +22,15 @@ class FooterContent extends StatelessWidget {
                 IconButton(
                     onPressed: () {},
                     iconSize: ICONSIZE,
-                    icon: Image.asset('/img/footer/instagram.png')),
+                    icon: Image.asset('img/footer/instagram.png')),
                 IconButton(
                     onPressed: () {},
                     iconSize: ICONSIZE,
-                    icon: Image.asset('/img/footer/share.png')),
+                    icon: Image.asset('img/footer/share.png')),
                 IconButton(
                     onPressed: () {},
                     iconSize: ICONSIZE,
-                    icon: Image.asset('/img/footer/like.png'))
+                    icon: Image.asset('img/footer/like.png'))
               ],
             ),
             Padding(

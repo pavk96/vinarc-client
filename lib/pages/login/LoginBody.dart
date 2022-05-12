@@ -26,7 +26,7 @@ class _LoginBodyState extends State<LoginBody> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController userEmailController = TextEditingController();
+    TextEditingController userIdController = TextEditingController();
     TextEditingController userPasswordController = TextEditingController();
 
     double width = MediaQuery.of(context).size.width;
@@ -55,7 +55,7 @@ class _LoginBodyState extends State<LoginBody> {
                 width: double.infinity,
                 height: TEXTFIELDTOPSIZE,
                 child: TextField(
-                  controller: userEmailController,
+                  controller: userIdController,
                   cursorColor: Color(0xFF486138),
                   decoration: InputDecoration(
                       hintText: "아이디를 입력해주세요",
@@ -143,10 +143,10 @@ class _LoginBodyState extends State<LoginBody> {
             width: double.infinity,
             child: TextButton(
                 onPressed: () {
-                  String email = userEmailController.text;
-                  String password = userPasswordController.text;
-                  getData(email, password);
-                  print("로그인버튼이 눌려졌습니다." + email + password);
+                  String userId = userIdController.text;
+                  String userPassword = userPasswordController.text;
+                  getData(userId, userPassword);
+                  print("로그인버튼이 눌려졌습니다." + userId + userPassword);
                 },
                 child: Text("로그인", style: TextStyle(fontSize: H3FONTSIZE)),
                 style: TextButton.styleFrom(
@@ -239,7 +239,7 @@ class _LoginBodyState extends State<LoginBody> {
                     WidgetSpan(
                         child: GestureDetector(
                       onTap: () {
-                        // Navigator.pushNamed(context, '/signup');
+                        Navigator.pushNamed(context, '/signup');
                         // goBootpayRequest(context);
                       },
                       child: Text("회원가입",
@@ -250,21 +250,21 @@ class _LoginBodyState extends State<LoginBody> {
         ]));
   }
 
-  getData(String email, String password) async {
-    print(email + " " + password);
-
-    var result = await http.get(
+  getData(String userId, String userPassword) async {
+    http.Response result = await http.post(
       Uri.parse('https://flyingstone.me/myapi/user/auth/login'),
+      body: json.encode({"userId": userId, "userPassword": userPassword}),
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
       },
     );
-    print(result.statusCode);
-    if (result.statusCode == 200) {
-      print(result.body);
+
+    if (result.statusCode == 201) {
+      print(result.headers['refresh_token']);
     } else {
+      print(result.body);
       throw Exception('실패함ㅅㄱ');
     }
   }

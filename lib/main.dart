@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Vinarc',
       theme: theme,
       debugShowCheckedModeBanner: false,
-      home: const MyPage(),
+      home: const Signup(),
       routes: {
         '/mypage': (context) => MyPage(),
         '/profile': (context) => Profile(),
