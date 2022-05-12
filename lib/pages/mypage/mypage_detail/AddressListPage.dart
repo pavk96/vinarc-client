@@ -39,69 +39,86 @@ class _AddressListPageState extends State<AddressListPage> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         print(snapshot.data);
         if (snapshot.hasData == false) {
-          return Container(
-            child: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("배송지를 입력해 주세요"),
-                        content: Column(
-                          children: [
-                            TextField(
-                              controller: addressNicknameController,
-                              decoration: InputDecoration(hintText: "배송지 이름"),
-                            ),
-                            Checkbox(
-                                value: isRoadAddress,
-                                onChanged: (isRoadAddress) {
-                                  setState(() {
-                                    isRoadAddress = !isRoadAddress!;
-                                  });
-                                }),
-                            TextField(
-                              controller: addressContextController,
-                              decoration: InputDecoration(hintText: "주소"),
-                            ),
-                            TextField(
-                              controller: addressReceiverNameController,
-                              decoration: InputDecoration(hintText: "받는 사람 이름"),
-                            ),
-                            TextField(
-                              controller: addressReceiverPhoneNumberController,
-                              decoration:
-                                  InputDecoration(hintText: "받는 사람 전화번호"),
-                            ),
-                          ],
-                        ),
-                        actions: [
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "Cancel",
-                                style: TextStyle(color: Color(0xFF384230)),
-                              )),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                _createUserAddress(
-                                    addressNicknameController.text,
-                                    addressContextController.text,
-                                    addressReceiverNameController.text,
-                                    addressReceiverPhoneNumberController.text,
-                                    true);
-                              },
-                              child: Text("Yes",
-                                  style: TextStyle(color: Color(0xFF384230))))
-                        ],
-                      );
-                    });
-              },
-            ),
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text("배송지 정보"),
+                  Container(
+                    child: IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("배송지를 입력해 주세요"),
+                                content: Column(
+                                  children: [
+                                    TextField(
+                                      controller: addressNicknameController,
+                                      decoration:
+                                          InputDecoration(hintText: "배송지 이름"),
+                                    ),
+                                    Checkbox(
+                                        value: isRoadAddress,
+                                        onChanged: (isRoadAddress) {
+                                          setState(() {
+                                            isRoadAddress = !isRoadAddress!;
+                                          });
+                                        }),
+                                    TextField(
+                                      controller: addressContextController,
+                                      decoration:
+                                          InputDecoration(hintText: "주소"),
+                                    ),
+                                    TextField(
+                                      controller: addressReceiverNameController,
+                                      decoration:
+                                          InputDecoration(hintText: "받는 사람 이름"),
+                                    ),
+                                    TextField(
+                                      controller:
+                                          addressReceiverPhoneNumberController,
+                                      decoration: InputDecoration(
+                                          hintText: "받는 사람 전화번호"),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        "Cancel",
+                                        style:
+                                            TextStyle(color: Color(0xFF384230)),
+                                      )),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _createUserAddress(
+                                            addressNicknameController.text,
+                                            addressContextController.text,
+                                            addressReceiverNameController.text,
+                                            addressReceiverPhoneNumberController
+                                                .text,
+                                            true);
+                                      },
+                                      child: Text("Yes",
+                                          style: TextStyle(
+                                              color: Color(0xFF384230))))
+                                ],
+                              );
+                            });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           );
         } else if (snapshot.hasError) {
           return Padding(
@@ -112,8 +129,114 @@ class _AddressListPageState extends State<AddressListPage> {
             ),
           );
         } else {
-          return Container(
-            child: Text(snapshot.data.addressNickname),
+          print(snapshot.data);
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text("배송지 정보"),
+                  Container(
+                    child: IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("배송지를 입력해 주세요"),
+                                content: Column(
+                                  children: [
+                                    TextField(
+                                      controller: addressNicknameController,
+                                      decoration:
+                                          InputDecoration(hintText: "배송지 이름"),
+                                    ),
+                                    Checkbox(
+                                        value: isRoadAddress,
+                                        onChanged: (isRoadAddress) {
+                                          setState(() {
+                                            isRoadAddress = !isRoadAddress!;
+                                          });
+                                        }),
+                                    TextField(
+                                      controller: addressContextController,
+                                      decoration:
+                                          InputDecoration(hintText: "주소"),
+                                    ),
+                                    TextField(
+                                      controller: addressReceiverNameController,
+                                      decoration:
+                                          InputDecoration(hintText: "받는 사람 이름"),
+                                    ),
+                                    TextField(
+                                      controller:
+                                          addressReceiverPhoneNumberController,
+                                      decoration: InputDecoration(
+                                          hintText: "받는 사람 전화번호"),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        "Cancel",
+                                        style:
+                                            TextStyle(color: Color(0xFF384230)),
+                                      )),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _createUserAddress(
+                                            addressNicknameController.text,
+                                            addressContextController.text,
+                                            addressReceiverNameController.text,
+                                            addressReceiverPhoneNumberController
+                                                .text,
+                                            true);
+                                      },
+                                      child: Text("Yes",
+                                          style: TextStyle(
+                                              color: Color(0xFF384230))))
+                                ],
+                              );
+                            });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            Text(snapshot.data.addressNickname),
+                            Text(snapshot.data.addressContext),
+                            Text(snapshot.data.addressReceiverPhoneNumber)
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {}, icon: Icon(Icons.edit)),
+                            IconButton(
+                                onPressed: () {}, icon: Icon(Icons.delete))
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
           );
         }
       },
@@ -145,17 +268,19 @@ class _AddressListPageState extends State<AddressListPage> {
       'Accept': 'application/json',
       'Authorization': token.toString()
     };
+    print(addressState);
+    String body = json.encode({
+      "addressNickname": addressNickname,
+      "addressContext": addressContext,
+      "addressReceiverName": addressReceiverName,
+      "addressReceiverPhoneNumber": addressReceiverPhoneNumber,
+      "addressState": addressState
+    });
     final response = await http.post(
         Uri.parse('https://flyingstone.me/myapi/user/address/create'),
-        body: json.encode({
-          addressNickname: addressNickname,
-          addressContext: addressContext,
-          addressReceiverName: addressReceiverName,
-          addressReceiverPhoneNumber: addressReceiverPhoneNumber,
-          addressState: addressState
-        }),
+        body: body,
         headers: requestHeaders);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return UserAddressPost.fromJson(json.decode(response.body));
     } else {
       throw Exception("asdfasdf");

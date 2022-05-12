@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       title: 'Vinarc',
       theme: theme,
       debugShowCheckedModeBanner: false,
-      home: const Signup(),
+      home: const LoginLayout(),
       routes: {
         '/mypage': (context) => MyPage(),
         '/profile': (context) => Profile(),

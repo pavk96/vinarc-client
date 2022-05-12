@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class UserAddressPost {
   final String? addressNickname;
-  final bool? addressState;
+  final int? addressState;
   final String? addressContext;
   final String? addressReceiverName;
   final String? addressReceiverPhoneNumber;
