@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:vinarc/pages/mypage/components/MyPageNavBtn.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/RecentViewedProduct.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/RefundAndExchange.dart';
@@ -13,7 +14,8 @@ import 'mypage_detail/AddressListPage.dart';
 import 'mypage_detail/Profile.dart';
 
 class MyPageBody extends StatelessWidget {
-  const MyPageBody({Key? key}) : super(key: key);
+  MyPageBody({Key? key}) : super(key: key);
+  final storage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -193,8 +195,15 @@ class MyPageBody extends StatelessWidget {
   }
 
   Future<UserProfilePost> _getUserProfile() async {
+    final token = await storage.read(key: "token");
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'authorization': token ?? ''
+    };
     final response = await http.get(
-        Uri.parse('http://flyingstone.me/myapi/user/profile?userId=rbwjd96'));
+        Uri.parse('https://flyingstone.me/myapi/user/profile'),
+        headers: requestHeaders);
     if (response.statusCode == 200) {
       return UserProfilePost.fromJson(json.decode(response.body));
     } else {

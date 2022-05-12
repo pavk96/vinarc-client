@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -15,6 +16,7 @@ class LoginBody extends StatefulWidget {
 }
 
 class _LoginBodyState extends State<LoginBody> {
+  final storage = new FlutterSecureStorage();
   bool? isAutoLogin = false;
   bool? isSaveId = false;
 
@@ -144,9 +146,8 @@ class _LoginBodyState extends State<LoginBody> {
             child: TextButton(
                 onPressed: () {
                   String userId = userIdController.text;
-                  String userPassword = userPasswordController.text;
-                  getData(userId, userPassword);
-                  print("로그인버튼이 눌려졌습니다." + userId + userPassword);
+                  String password = userPasswordController.text;
+                  getData(userId, password);
                 },
                 child: Text("로그인", style: TextStyle(fontSize: H3FONTSIZE)),
                 style: TextButton.styleFrom(
@@ -181,7 +182,7 @@ class _LoginBodyState extends State<LoginBody> {
                             child: Text('네이버'),
                             onPressed: () {
                               // _login_naver();
-                              _login_naver();
+                              //_login_naver();
                             },
                           ),
                         ],
@@ -250,26 +251,24 @@ class _LoginBodyState extends State<LoginBody> {
         ]));
   }
 
-  getData(String userId, String userPassword) async {
-    http.Response result = await http.post(
+  getData(String userId, String password) async {
+    var result = await http.post(
       Uri.parse('https://flyingstone.me/myapi/user/auth/login'),
-      body: json.encode({"userId": userId, "userPassword": userPassword}),
+      body: json.encode({"userId": userId, "userPassword": password}),
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
       },
     );
-
     if (result.statusCode == 201) {
       print(result.headers['refresh_token']);
-    } else {
-      print(result.body);
-      throw Exception('실패함ㅅㄱ');
+      print(result.statusCode);
+      if (result.statusCode == 201) {
+        throw Exception('실패함ㅅㄱ');
+      }
     }
-  }
 
-  void _login_naver() async {
     launchUrlString('https://flyingstone.me/myapi/user/auth/naver');
   }
 
