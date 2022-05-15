@@ -92,10 +92,9 @@ class MyPageBody extends StatelessWidget {
                                                   spreadRadius: -8,
                                                   blurRadius: 6)
                                             ]),
-                                        child: Image(
+                                        child: Image.asset(
+                                          'assets/img/mypage/profile_img.png',
                                           fit: BoxFit.cover,
-                                          image: AssetImage(
-                                              '/img/mypage/profile_img.png'),
                                         )),
                                   ),
                                   Container(

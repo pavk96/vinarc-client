@@ -17,6 +17,9 @@ class LoginBody extends StatefulWidget {
 
 class _LoginBodyState extends State<LoginBody> {
   final storage = new FlutterSecureStorage();
+
+  final TextEditingController userIdController = TextEditingController();
+  final TextEditingController userPasswordController = TextEditingController();
   bool? isAutoLogin = false;
   bool? isSaveId = false;
 
@@ -28,9 +31,6 @@ class _LoginBodyState extends State<LoginBody> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController userIdController = TextEditingController();
-    TextEditingController userPasswordController = TextEditingController();
-
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     double SIDEPADDINGSIZE = width / 13.8;
@@ -147,7 +147,7 @@ class _LoginBodyState extends State<LoginBody> {
                 onPressed: () {
                   String userId = userIdController.text;
                   String password = userPasswordController.text;
-                  getData(userId, password);
+                  _getData(userId, password);
                 },
                 child: Text("로그인", style: TextStyle(fontSize: H3FONTSIZE)),
                 style: TextButton.styleFrom(
@@ -172,8 +172,8 @@ class _LoginBodyState extends State<LoginBody> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image(
-                            image: AssetImage('/img/login/naver.png'),
+                          Image.asset(
+                            'assets/img/login/naver.png',
                           ),
                           TextButton(
                             style: TextButton.styleFrom(
@@ -181,7 +181,7 @@ class _LoginBodyState extends State<LoginBody> {
                             ),
                             child: Text('네이버'),
                             onPressed: () {
-                              // _login_naver();
+                              _login_naver();
                               //_login_naver();
                             },
                           ),
@@ -197,7 +197,7 @@ class _LoginBodyState extends State<LoginBody> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image(image: AssetImage('/img/login/facebook.png')),
+                          Image.asset('assets/img/login/facebook.png'),
                           TextButton(
                             style: TextButton.styleFrom(
                               primary: Colors.black,
@@ -251,7 +251,7 @@ class _LoginBodyState extends State<LoginBody> {
         ]));
   }
 
-  getData(String userId, String password) async {
+  _getData(String userId, String password) async {
     var result = await http.post(
       Uri.parse('https://flyingstone.me/myapi/user/auth/login'),
       body: json.encode({"userId": userId, "userPassword": password}),
@@ -269,6 +269,9 @@ class _LoginBodyState extends State<LoginBody> {
     }
   }
 
+  void _login_naver() async {
+    launchUrlString('https://flyingstone.me/myapi/user/auth/naver');
+  }
   // void _logout_naver() {
   //   FlutterNaverLogin.logOut();
   //   setState(() {
