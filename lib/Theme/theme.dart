@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 ThemeData theme = ThemeData(
     primaryColor: Color(0xFF486138),
-    fontFamily: 'NotoSansCjkkr',
+    fontFamily: 'NotoSansCJKkr',
     textSelectionTheme: TextSelectionThemeData(cursorColor: Color(0xFF486138)),
     appBarTheme: AppBarTheme(
         color: Colors.white,

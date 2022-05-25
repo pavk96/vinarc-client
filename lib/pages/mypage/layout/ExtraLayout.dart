@@ -4,8 +4,10 @@ import 'package:vinarc/pages/mypage/components/ProfileAndAddressAppBarLeading.da
 
 class ExtraLayout extends StatelessWidget {
   final String text;
+  final Widget child;
 
-  const ExtraLayout({Key? key, required this.text}) : super(key: key);
+  const ExtraLayout({Key? key, required this.text, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +17,7 @@ class ExtraLayout extends StatelessWidget {
           leading: ExtraAppBarLeading(),
           elevation: 0,
           title: Text(text)),
+      body: child,
     );
   }
 }

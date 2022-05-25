@@ -263,7 +263,7 @@ class _LoginBodyState extends State<LoginBody> {
     );
     if (result.statusCode == 201) {
       await storage.write(key: "token", value: result.headers['refresh_token']);
-      Navigator.of(context).pushNamed("/mypage");
+      Navigator.of(context).pushNamed("/");
     } else {
       throw Exception('실패함ㅅㄱ');
     }

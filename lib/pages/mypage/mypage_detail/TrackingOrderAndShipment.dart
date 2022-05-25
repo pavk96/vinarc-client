@@ -8,6 +8,7 @@ class TrackingOrderAndShipment extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExtraLayout(
       text: "주문/배송 조회",
+      child: Container(),
     );
   }
 }

@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:vinarc/pages/mypage/layout/ProfileAndAddressLayout.dart';
 import 'package:vinarc/post/UserAddressGet.dart';
 import 'package:http/http.dart' as http;
+import 'package:vinarc/util/DynamicLink.dart';
 
 class AddressListPage extends StatefulWidget {
   const AddressListPage({Key? key}) : super(key: key);
@@ -424,7 +426,9 @@ class _AddressListPageState extends State<AddressListPage> {
                                                 TextButton(
                                                     onPressed: () {
                                                       Navigator.pop(context);
-                                                      _deleteUserAddress();
+                                                      _deleteUserAddress(
+                                                          userAddress
+                                                              .addressId!);
                                                     },
                                                     child: Text("Yes",
                                                         style: TextStyle(
@@ -522,5 +526,21 @@ class _AddressListPageState extends State<AddressListPage> {
     }
   }
 
-  void _deleteUserAddress() {}
+  void _deleteUserAddress(int address_id) async {
+    String? token = await storage.read(key: "token");
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': token.toString()
+    };
+    final response = await http.get(
+        Uri.parse(
+            'https://flyingstone.me/myapi/user/address/delete?address_id=${address_id}'),
+        headers: requestHeaders);
+    if (response.statusCode == 200) {
+      setState(() {});
+    } else {
+      throw Exception("asdfasdf");
+    }
+  }
 }

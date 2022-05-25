@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1016403571936",
+    "project_id": "vinarc-a235f",
+    "storage_bucket": "vinarc-a235f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016403571936:android:d70b05ac27c3c973398c85",
+        "android_client_info": {
+          "package_name": "com.example.vinarc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1016403571936-im5fee703f6er299vail7amnk94md8nb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vinarc",
+            "certificate_hash": "6755bd9cb4e38a02934813c1cf1cda2cb336c59b"
+          }
+        },
+        {
+          "client_id": "1016403571936-vddopaq2pepu34jd6dot4ias6oj479hn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw6t41AfFu6bqSDGCNKZlGUc9u3w0ZKto"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1016403571936-vddopaq2pepu34jd6dot4ias6oj479hn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
