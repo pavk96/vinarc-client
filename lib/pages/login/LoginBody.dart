@@ -264,12 +264,9 @@ class _LoginBodyState extends State<LoginBody> {
     if (result.statusCode == 201) {
       print(result.headers['refresh_token']);
       print(result.statusCode);
-      if (result.statusCode == 201) {
-        throw Exception('실패함ㅅㄱ');
-      }
+    } else {
+      throw Exception('실패함ㅅㄱ');
     }
-
-    launchUrlString('https://flyingstone.me/myapi/user/auth/naver');
   }
 
   // void _logout_naver() {
