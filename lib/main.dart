@@ -9,6 +9,7 @@ import 'package:vinarc/pages/mypage/mypage_detail/Cart.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/RecentViewedProduct.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/RefundAndExchange.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/TrackingOrderAndShipment.dart';
+import 'package:vinarc/pages/productdetail/ProductDetail.dart';
 import 'package:vinarc/pages/productlist/ProductList.dart';
 import 'package:vinarc/pages/signup/Signup.dart';
 import 'package:vinarc/pages/mypage/MyPage.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/refund': (context) => RefundAndExchange(),
         '/recentproduct': (context) => RecentViewedProduct(),
         '/productlist': (context) => ProductList(),
+        '/productdetail': (context) => ProductDetail(),
       },
     );
   }

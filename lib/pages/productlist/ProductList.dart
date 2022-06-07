@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProductList extends StatelessWidget {
+class ProductList extends StatefulWidget {
   const ProductList({Key? key}) : super(key: key);
 
+  @override
+  State<ProductList> createState() => _ProductListState();
+}
+
+class _ProductListState extends State<ProductList> {
   @override
   Widget build(BuildContext context) {
     //?를 붙인 것은 개발용 나중에 String으로 바꿈
     String? arg =
         ModalRoute.of(context)!.settings.arguments as String? ?? 'category';
+    var heartIcon = Icon(Icons.favorite_border_outlined);
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -63,11 +69,19 @@ class ProductList extends StatelessWidget {
                       children: [
                         Stack(
                           children: [
-                            Image.asset('assets/img/productlist/oneproduct.png',
-                                width: MediaQuery.of(context).size.width / 2.3,
-                                height:
-                                    MediaQuery.of(context).size.width / 1.76,
-                                fit: BoxFit.cover),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/productdetail',
+                                    arguments: arg);
+                              },
+                              child: Image.asset(
+                                  'assets/img/productlist/oneproduct.png',
+                                  width:
+                                      MediaQuery.of(context).size.width / 2.3,
+                                  height:
+                                      MediaQuery.of(context).size.width / 1.76,
+                                  fit: BoxFit.cover),
+                            ),
                             Positioned(
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -75,7 +89,7 @@ class ProductList extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(50)),
                                   child: IconButton(
                                     onPressed: () {},
-                                    icon: Icon(Icons.favorite_border_outlined),
+                                    icon: heartIcon,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -126,8 +140,13 @@ class ProductList extends StatelessWidget {
                                       color: Color(0x25ffffff),
                                       borderRadius: BorderRadius.circular(50)),
                                   child: IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.favorite_border_outlined),
+                                    onPressed: () {
+                                      setState(() {
+                                        heartIcon = Icon(Icons.favorite_border,
+                                            color: Colors.red);
+                                      });
+                                    },
+                                    icon: heartIcon,
                                     color: Colors.white,
                                   ),
                                 ),

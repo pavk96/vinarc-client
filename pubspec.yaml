@@ -78,6 +78,12 @@ flutter:
         - assets/img/footer/
         - assets/img/mypage/
         - assets/img/productlist/
+        - assets/img/landingpage/
+        - assets/img/landingpage/mainicon/
+        - assets/img/landingpage/mainimage/
+        - assets/img/landingpage/categoryicon/
+        - assets/img/landingpage/popularlist/
+        - assets/img/landingpage/reviewimage/
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/assets-and-images/#resolution-aware.
 
