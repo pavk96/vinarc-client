@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UserAddressGet {
+  final int? addressId;
   final String? addressNickname;
   final bool? addressState;
   final String? addressContext;
@@ -9,25 +10,21 @@ class UserAddressGet {
   final int? userUserNumber;
 
   UserAddressGet(
-      {this.addressContext,
+      {this.addressId,
+      this.addressContext,
       this.addressNickname,
       this.addressState,
       this.addressReceiverName,
       this.addressReceiverPhoneNumber,
       this.userUserNumber});
   factory UserAddressGet.fromJson(Map<String, dynamic> json) {
-    print(UserAddressGet(
-        addressContext: json['addressContext'],
-        addressNickname: json['addressNickname'],
-        addressReceiverName: json['addressReceiverName'],
-        addressReceiverPhoneNumber: json['addressReceiverPhoneNumber'],
-        userUserNumber: json['userUserNumber']));
-    print(json["addressState"]);
     return UserAddressGet(
-        addressContext: json['addressContext'],
-        addressNickname: json['addressNickname'],
-        addressReceiverName: json['addressReceiverName'],
-        addressReceiverPhoneNumber: json['addressReceiverPhoneNumber'],
-        userUserNumber: json['userUserNumber']);
+        addressId: json['address_address_id'],
+        addressContext: json['address_address_context'],
+        addressNickname: json['address_address_nickname'],
+        addressReceiverName: json['address_address_receiver_name'],
+        addressReceiverPhoneNumber:
+            json['address_address_receiver_phone_number'],
+        userUserNumber: json['address_user_user_number']);
   }
 }

@@ -8,6 +8,7 @@ class Coupon extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExtraLayout(
       text: "쿠폰",
+      child: Container(),
     );
   }
 }

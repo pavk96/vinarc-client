@@ -8,6 +8,7 @@ class RefundAndExchange extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExtraLayout(
       text: "교환/환불",
+      child: Container(),
     );
   }
 }

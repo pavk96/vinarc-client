@@ -22,7 +22,7 @@ class MyPageBody extends StatelessWidget {
     double TOPCOMPONENTHEIGHT = MediaQuery.of(context).size.height / 1.7;
     double TOPCOMPONENTINNERCONTENTHEIGHT = TOPCOMPONENTHEIGHT / 1.4;
     return FutureBuilder<UserProfilePost>(
-        future: _getUserProfile(),
+        future: _getUserProfile(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData == false) {
             return Center(
@@ -92,10 +92,9 @@ class MyPageBody extends StatelessWidget {
                                                   spreadRadius: -8,
                                                   blurRadius: 6)
                                             ]),
-                                        child: Image(
+                                        child: Image.asset(
+                                          'assets/img/mypage/profile_img.png',
                                           fit: BoxFit.cover,
-                                          image: AssetImage(
-                                              '/img/mypage/profile_img.png'),
                                         )),
                                   ),
                                   Container(
@@ -149,7 +148,7 @@ class MyPageBody extends StatelessWidget {
                               Text("쿠폰",
                                   style: TextStyle(
                                       fontFamily: 'NotoSansCJKkr',
-                                      fontWeight: FontWeight.w900,
+                                      fontWeight: FontWeight.w700,
                                       color: Color(0xFF808879))),
                               Padding(padding: EdgeInsets.all(10)),
                               Text("13",
@@ -157,7 +156,7 @@ class MyPageBody extends StatelessWidget {
                                       fontSize: 24,
                                       fontFamily: 'NotoSansCJKkr',
                                       color: Color(0xFFC89DA9),
-                                      fontWeight: FontWeight.w900))
+                                      fontWeight: FontWeight.w700))
                             ],
                           )),
                     ),
@@ -194,7 +193,7 @@ class MyPageBody extends StatelessWidget {
         });
   }
 
-  Future<UserProfilePost> _getUserProfile() async {
+  Future<UserProfilePost> _getUserProfile(context) async {
     final token = await storage.read(key: "token");
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
@@ -204,12 +203,15 @@ class MyPageBody extends StatelessWidget {
     final response = await http.get(
         Uri.parse('https://flyingstone.me/myapi/user/profile'),
         headers: requestHeaders);
+    final json = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      return UserProfilePost.fromJson(json.decode(response.body));
+      return UserProfilePost.fromJson(json);
     } else {
-      throw Exception("asdfasdf");
+      print(json['statusCode']);
+      if (json['statusCode'] != 200) {
+        Navigator.pushNamed(context, '/login');
+      }
+      return Future.error(json['message']);
     }
-
-    // return ;
   }
 }

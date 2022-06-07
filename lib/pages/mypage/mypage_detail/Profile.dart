@@ -20,13 +20,6 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final storage = FlutterSecureStorage();
 
-  // late Future post;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   post = _getUserProfile();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return ProfileAndAddressLayout(
@@ -52,7 +45,7 @@ class _ProfileState extends State<Profile> {
               ),
             );
           } else {
-            print(snapshot.data.userName);
+            UserProfilePost userData = snapshot.data;
             return SizedBox(
               child: Padding(
                 padding: EdgeInsets.only(
@@ -66,15 +59,13 @@ class _ProfileState extends State<Profile> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              ProfileEdit(div: "이름", value: userData.userName!),
                               ProfileEdit(
-                                  div: "이름", value: snapshot.data.userName),
+                                  div: "생년월일", value: userData.userBirth!),
                               ProfileEdit(
-                                  div: "생년월일", value: snapshot.data.userBirth),
+                                  div: "휴대폰", value: userData.userPhone!),
                               ProfileEdit(
-                                  div: "휴대폰", value: snapshot.data.userPhone),
-                              ProfileEdit(
-                                  div: "이메일 주소",
-                                  value: snapshot.data.userEmail),
+                                  div: "이메일 주소", value: userData.userEmail!),
                             ]),
                       ),
                       Padding(
@@ -115,7 +106,5 @@ class _ProfileState extends State<Profile> {
     } else {
       throw Exception("asdfasdf");
     }
-
-    // return ;
   }
 }
