@@ -72,7 +72,11 @@ class _ProfileState extends State<Profile> {
                           padding: EdgeInsets.only(
                               top: MediaQuery.of(context).size.height / 11)),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          final storage = FlutterSecureStorage();
+                          storage.delete(key: "token");
+                          Navigator.of(context).pushNamed('/');
+                        },
                         child: Text("로그아웃"),
                         style: ButtonStyle(
                             shape: MaterialStateProperty.all(

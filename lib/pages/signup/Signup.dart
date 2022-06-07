@@ -78,34 +78,36 @@ class _SignupState extends State<Signup> {
           elevation: 0,
           centerTitle: false,
         ),
-        body: Container(
-          child: Center(
-              child: TextButton(
-            onPressed: () => Bootpay().request(
-              context: context,
-              payload: payload,
-              onCancel: (String data) {
-                print('------- onCancel: $data');
-              },
-              onError: (String data) {
-                print('------- onCancel: $data');
-              },
-              onClose: () {
-                print('------- onClose');
-              },
-              onReady: (String data) {
-                print('------- onReady: $data');
-              },
-              onConfirm: (String data) {
-                print('------- onConfirm: $data');
-                return true;
-              },
-              onDone: (String data) {
-                print('------- onDone: $data');
-              },
-            ),
-            child: Text('부트페이 결제테스트'),
-          )),
-        ));
+        body: SingleChildScrollView(child: SignUpBody())
+        // Container(
+        //   child: Center(
+        //       child: TextButton(
+        //     onPressed: () => Bootpay().request(
+        //       context: context,
+        //       payload: payload,
+        //       onCancel: (String data) {
+        //         print('------- onCancel: $data');
+        //       },
+        //       onError: (String data) {
+        //         print('------- onCancel: $data');
+        //       },
+        //       onClose: () {
+        //         print('------- onClose');
+        //       },
+        //       onReady: (String data) {
+        //         print('------- onReady: $data');
+        //       },
+        //       onConfirm: (String data) {
+        //         print('------- onConfirm: $data');
+        //         return true;
+        //       },
+        //       onDone: (String data) {
+        //         print('------- onDone: $data');
+        //       },
+        //     ),
+        //     child: Text('부트페이 결제테스트'),
+        //   )),
+        // )
+        );
   }
 }
