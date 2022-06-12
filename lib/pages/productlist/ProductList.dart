@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+
+import '../../post/ProductGet.dart';
 
 class ProductList extends StatefulWidget {
   const ProductList({Key? key}) : super(key: key);
@@ -56,136 +61,189 @@ class _ProductListState extends State<ProductList> {
             Padding(padding: EdgeInsets.only(right: 15))
           ],
         ),
-        body: ListView(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  alignment: Alignment.centerLeft,
-                  width: MediaQuery.of(context).size.width / 2.3,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        body: FutureBuilder<List<ProductGet>>(
+            future: _getProduct(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData == false) {
+                return Center(
+                  child: CircularProgressIndicator(color: Color(0xFF384230)),
+                );
+              } else if (snapshot.hasError) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Error: ${snapshot.error}',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                );
+              } else {
+                List<ProductGet> productData = snapshot.data;
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Stack(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/productdetail',
-                                    arguments: arg);
-                              },
-                              child: Image.asset(
-                                  'assets/img/productlist/oneproduct.png',
-                                  width:
-                                      MediaQuery.of(context).size.width / 2.3,
-                                  height:
-                                      MediaQuery.of(context).size.width / 1.76,
-                                  fit: BoxFit.cover),
-                            ),
-                            Positioned(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Color(0x25ffffff),
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: IconButton(
-                                    onPressed: () {},
-                                    icon: heartIcon,
-                                    color: Colors.white,
-                                  ),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          width: MediaQuery.of(context).size.width / 2.3,
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Stack(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/productdetail',
+                                            arguments: arg);
+                                      },
+                                      child: Image.asset(
+                                          'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+                                              productData[index]
+                                                  .productThumnailUrl!,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              2.3,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              1.76,
+                                          fit: BoxFit.cover),
+                                    ),
+                                    Positioned(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Color(0x25ffffff),
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                          child: IconButton(
+                                            onPressed: () {},
+                                            icon: heartIcon,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        top: 20,
+                                        right: 4)
+                                  ],
                                 ),
-                                top: 20,
-                                right: 4)
-                          ],
-                        ),
-                        Text(
-                          "Vinarc Chair",
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'NotoSansCJKkr'),
-                        ),
-                        Text(
-                          "의자, 화이트, 35x45x78cm",
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'NotoSansCJKkr',
-                              fontWeight: FontWeight.w500),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Text(
-                            "¥ 135,000",
-                            style: GoogleFonts.roboto(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        )
-                      ]),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  width: MediaQuery.of(context).size.width / 2.3,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            Image.asset('assets/img/productlist/oneproduct.png',
-                                width: MediaQuery.of(context).size.width / 2.3,
-                                height:
-                                    MediaQuery.of(context).size.width / 1.76,
-                                fit: BoxFit.cover),
-                            Positioned(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Color(0x25ffffff),
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        heartIcon = Icon(Icons.favorite_border,
-                                            color: Colors.red);
-                                      });
-                                    },
-                                    icon: heartIcon,
-                                    color: Colors.white,
-                                  ),
+                                Text(
+                                  "Vinarc Chair",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'NotoSansCJKkr'),
                                 ),
-                                top: 20,
-                                right: 4)
-                          ],
+                                Text(
+                                  "의자, 화이트, 35x45x78cm",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'NotoSansCJKkr',
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    "¥ 135,000",
+                                    style: GoogleFonts.roboto(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              ]),
                         ),
-                        Text(
-                          "Vinarc Chair",
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'NotoSansCJKkr'),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          width: MediaQuery.of(context).size.width / 2.3,
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Stack(
+                                  children: [
+                                    Image.asset(
+                                        'assets/img/productlist/oneproduct.png',
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                2.3,
+                                        height:
+                                            MediaQuery.of(context).size.width /
+                                                1.76,
+                                        fit: BoxFit.cover),
+                                    Positioned(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Color(0x25ffffff),
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                          child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                heartIcon = Icon(
+                                                    Icons.favorite_border,
+                                                    color: Colors.red);
+                                              });
+                                            },
+                                            icon: heartIcon,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        top: 20,
+                                        right: 4)
+                                  ],
+                                ),
+                                Text(
+                                  "Vinarc Chair",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'NotoSansCJKkr'),
+                                ),
+                                Text(
+                                  "의자, 화이트, 35x45x78cm",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'NotoSansCJKkr',
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    "¥ 135,000",
+                                    style: GoogleFonts.roboto(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              ]),
                         ),
-                        Text(
-                          "의자, 화이트, 35x45x78cm",
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'NotoSansCJKkr',
-                              fontWeight: FontWeight.w500),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Text(
-                            "¥ 135,000",
-                            style: GoogleFonts.roboto(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        )
-                      ]),
-                ),
-              ],
-            )
-          ],
-        )
+                      ],
+                    );
+                  },
+                  itemCount: productData.length / 2.ceil() == 0
+                      ? 0
+                      : (productData.length / 2.ceil()).toInt(),
+                );
+              }
+            })
         // FutureBuilder(
         //     builder: (context, snapshot) => ListView(
         //           children: [],
         //         )),
         );
+  }
+
+  Future<List<ProductGet>> _getProduct() async {
+    final response =
+        await http.get(Uri.parse('https://flyingstone.me/myapi/product'));
+    List<ProductGet> productList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        productList.add(ProductGet.fromJson(item));
+      }
+      print(productList);
+      return productList;
+    } else {
+      throw Exception("asdfasdf");
+    }
   }
 }

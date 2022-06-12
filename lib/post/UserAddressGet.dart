@@ -19,12 +19,11 @@ class UserAddressGet {
       this.userUserNumber});
   factory UserAddressGet.fromJson(Map<String, dynamic> json) {
     return UserAddressGet(
-        addressId: json['address_address_id'],
-        addressContext: json['address_address_context'],
-        addressNickname: json['address_address_nickname'],
-        addressReceiverName: json['address_address_receiver_name'],
-        addressReceiverPhoneNumber:
-            json['address_address_receiver_phone_number'],
-        userUserNumber: json['address_user_user_number']);
+        addressId: json['address_id'],
+        addressContext: json['address_context'],
+        addressNickname: json['address_nickname'],
+        addressReceiverName: json['address_receiver_name'],
+        addressReceiverPhoneNumber: json['address_receiver_phone_number'],
+        userUserNumber: json['user_number']);
   }
 }
