@@ -35,10 +35,10 @@ class _LandingPageState extends State<LandingPage> {
     ),
   ];
 
+  var heartIcon = Icon(Icons.favorite_outline);
   @override
   Widget build(BuildContext context) {
     int _current = 0;
-    var heartIcon = Icon(Icons.favorite_outline);
     return Scaffold(
         backgroundColor: Color(0xFFD6D6D6),
         appBar: AppBar(
@@ -334,6 +334,12 @@ class _LandingPageState extends State<LandingPage> {
                                   )
                                 ]),
                               ),
+                              SizedBox(
+                                width: 54,
+                                height: 14,
+                                child: Image.asset(
+                                    'assets/img/landingpage/popularlist/band.png'),
+                              ),
                               Positioned(
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -343,8 +349,9 @@ class _LandingPageState extends State<LandingPage> {
                                     child: IconButton(
                                       onPressed: () {
                                         setState(() {
+                                          print("HI");
                                           heartIcon = Icon(
-                                              Icons.favorite_border,
+                                              Icons.favorite_rounded,
                                               color: Colors.red);
                                         });
                                       },
@@ -354,12 +361,6 @@ class _LandingPageState extends State<LandingPage> {
                                   ),
                                   top: 20,
                                   right: 4),
-                              SizedBox(
-                                width: 54,
-                                height: 14,
-                                child: Image.asset(
-                                    'assets/img/landingpage/popularlist/band.png'),
-                              ),
                             ],
                           ),
                           Text(
@@ -411,10 +412,27 @@ class _LandingPageState extends State<LandingPage> {
                                             BorderRadius.circular(50)),
                                     child: IconButton(
                                       onPressed: () {
-                                        setState(() {
-                                          heartIcon = Icon(
-                                              Icons.favorite_border,
-                                              color: Colors.red);
+                                        setState(() async {
+                                          FlutterSecureStorage storage =
+                                              FlutterSecureStorage();
+                                          final token =
+                                              await storage.read(key: "token");
+
+                                          if (token == null) {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                      title:
+                                                          Text("로그인 하고 오세요"));
+                                                });
+                                            Navigator.pushNamed(
+                                                context, '/login');
+                                          } else {
+                                            heartIcon = Icon(
+                                                Icons.favorite_border,
+                                                color: Colors.red);
+                                          }
                                         });
                                       },
                                       icon: heartIcon,
@@ -498,65 +516,72 @@ class _LandingPageState extends State<LandingPage> {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: 238,
-                              height: 50,
-                              decoration:
-                                  BoxDecoration(color: Color(0x30191919)),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 30,
-                                    height: 30,
-                                    child: Image.asset(
-                                        'assets/img/mypage/profile_img.png'),
-                                    decoration: BoxDecoration(boxShadow: [
-                                      BoxShadow(blurRadius: 1, spreadRadius: 1)
-                                    ], borderRadius: BorderRadius.circular(15)),
-                                  ),
-                                  Text("Umesh appu",
-                                      style: TextStyle(
+                        SizedBox(
+                          height: 430,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: 238,
+                                height: 50,
+                                decoration:
+                                    BoxDecoration(color: Color(0x30191919)),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 30,
+                                      height: 30,
+                                      child: Image.asset(
+                                          'assets/img/mypage/profile_img.png'),
+                                      decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                                blurRadius: 1, spreadRadius: 1)
+                                          ],
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                    ),
+                                    Text("Umesh appu",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ))
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: 238,
+                                height: 170,
+                                decoration:
+                                    BoxDecoration(color: Color(0x30191919)),
+                                padding: EdgeInsets.only(
+                                    left: 12, top: 24, bottom: 20),
+                                alignment: Alignment.bottomCenter,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "The Greatest Cozy Chair",
+                                      style: GoogleFonts.roboto(
                                         color: Colors.white,
                                         fontSize: 14,
-                                      ))
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 238,
-                              height: 170,
-                              decoration:
-                                  BoxDecoration(color: Color(0x30191919)),
-                              padding: EdgeInsets.only(
-                                  left: 12, top: 24, bottom: 20),
-                              alignment: Alignment.bottomCenter,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "The Greatest Cozy Chair",
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 14,
+                                      ),
                                     ),
-                                  ),
-                                  _countingStar(),
-                                  Text(
-                                    "High in quality, Range of Products\nCustomer friendly staff and Value...",
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 14,
+                                    _countingStar(),
+                                    Text(
+                                      "High in quality, Range of Products\nCustomer friendly staff and Value...",
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         )
                       ],
                     ),
