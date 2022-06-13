@@ -15,12 +15,12 @@ class ProductList extends StatefulWidget {
 }
 
 class _ProductListState extends State<ProductList> {
+  var heartIcon = Icon(Icons.favorite_border_outlined);
   @override
   Widget build(BuildContext context) {
     //?를 붙인 것은 개발용 나중에 String으로 바꿈
     String? arg =
         ModalRoute.of(context)!.settings.arguments as String? ?? 'category';
-    var heartIcon = Icon(Icons.favorite_border_outlined);
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -83,145 +83,14 @@ class _ProductListState extends State<ProductList> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          width: MediaQuery.of(context).size.width / 2.3,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Stack(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                            context, '/productdetail',
-                                            arguments: arg);
-                                      },
-                                      child: Image.asset(
-                                          'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
-                                              productData[index]
-                                                  .productThumnailUrl!,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              2.3,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              1.76,
-                                          fit: BoxFit.cover),
-                                    ),
-                                    Positioned(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: Color(0x25ffffff),
-                                              borderRadius:
-                                                  BorderRadius.circular(50)),
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: heartIcon,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        top: 20,
-                                        right: 4)
-                                  ],
-                                ),
-                                Text(
-                                  "Vinarc Chair",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'NotoSansCJKkr'),
-                                ),
-                                Text(
-                                  "의자, 화이트, 35x45x78cm",
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: 'NotoSansCJKkr',
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                  child: Text(
-                                    "¥ 135,000",
-                                    style: GoogleFonts.roboto(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                )
-                              ]),
-                        ),
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          width: MediaQuery.of(context).size.width / 2.3,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Stack(
-                                  children: [
-                                    Image.asset(
-                                        'assets/img/productlist/oneproduct.png',
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                2.3,
-                                        height:
-                                            MediaQuery.of(context).size.width /
-                                                1.76,
-                                        fit: BoxFit.cover),
-                                    Positioned(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: Color(0x25ffffff),
-                                              borderRadius:
-                                                  BorderRadius.circular(50)),
-                                          child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                heartIcon = Icon(
-                                                    Icons.favorite_border,
-                                                    color: Colors.red);
-                                              });
-                                            },
-                                            icon: heartIcon,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        top: 20,
-                                        right: 4)
-                                  ],
-                                ),
-                                Text(
-                                  "Vinarc Chair",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'NotoSansCJKkr'),
-                                ),
-                                Text(
-                                  "의자, 화이트, 35x45x78cm",
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: 'NotoSansCJKkr',
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                  child: Text(
-                                    "¥ 135,000",
-                                    style: GoogleFonts.roboto(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                )
-                              ]),
-                        ),
+                        _listItem(productData, index * 2),
+                        _listItem(productData, index * 2 + 1)
                       ],
                     );
                   },
-                  itemCount: productData.length / 2.ceil() == 0
+                  itemCount: (productData.length / 2).ceil() == 0
                       ? 0
-                      : (productData.length / 2.ceil()).toInt(),
+                      : (productData.length / 2).ceil().toInt(),
                 );
               }
             })
@@ -244,6 +113,73 @@ class _ProductListState extends State<ProductList> {
       return productList;
     } else {
       throw Exception("asdfasdf");
+    }
+  }
+
+  Widget _listItem(List<ProductGet> productData, index) {
+    if (productData.length < index + 1) {
+      return Container(
+        alignment: Alignment.centerLeft,
+        width: MediaQuery.of(context).size.width / 2.3,
+      );
+    } else {
+      return Container(
+        alignment: Alignment.centerLeft,
+        width: MediaQuery.of(context).size.width / 2.3,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Stack(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/productdetail',
+                      arguments: productData[index].productNumber);
+                },
+                child: Image.network(
+                    'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+                        productData[index].productThumnailUrl!,
+                    width: MediaQuery.of(context).size.width / 2.3,
+                    height: MediaQuery.of(context).size.width / 1.76,
+                    fit: BoxFit.cover),
+              ),
+              Positioned(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Color(0x25ffffff),
+                        borderRadius: BorderRadius.circular(50)),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: heartIcon,
+                      color: Colors.white,
+                    ),
+                  ),
+                  top: 20,
+                  right: 4)
+            ],
+          ),
+          Text(
+            productData[index].productName!,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'NotoSansCJKkr'),
+          ),
+          Text(
+            productData[index].productSize!,
+            style: TextStyle(
+                fontSize: 13,
+                fontFamily: 'NotoSansCJKkr',
+                fontWeight: FontWeight.w500),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Text(
+              productData[index].productPrice.toString(),
+              style:
+                  GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          )
+        ]),
+      );
     }
   }
 }
