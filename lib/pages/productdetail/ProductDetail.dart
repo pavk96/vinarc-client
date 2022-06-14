@@ -4,6 +4,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:footer/footer.dart';
 import 'package:footer/footer_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:vinarc/main.dart';
+import 'package:vinarc/post/ProductDetailImage.dart';
+import 'package:vinarc/post/ProductGet.dart';
 
 import '../layout/Footer.dart';
 
@@ -32,8 +36,10 @@ class _ProductDetailState extends State<ProductDetail> {
   @override
   Widget build(BuildContext context) {
     int _current = 0;
-    String? arg =
-        ModalRoute.of(context)!.settings.arguments as String? ?? 'category';
+    ProductGet product =
+        ModalRoute.of(context)!.settings.arguments as ProductGet;
+    // List<ProductDetailImage> productDetailImageList =
+    //     context.read<Product>().getProductDetailImages(product!.productNumber) as List<ProductDetailImage>;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -71,62 +77,71 @@ class _ProductDetailState extends State<ProductDetail> {
         ],
       ),
       extendBodyBehindAppBar: true,
-      body: FooterView(
-        flex: 5,
-        children: [
-          Row(children: [
-            Expanded(
-                flex: 6,
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  children: [
-                    CarouselSlider(
-                      items: tagImageList,
-                      options: CarouselOptions(
-                        height: 638,
-                        viewportFraction: 1,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _current = index;
-                          });
-                        },
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: tagImageList.asMap().entries.map((entry) {
-                        return GestureDetector(
-                            onTap: () => controller.animateToPage(entry.key),
-                            child: _current != entry.key
-                                ? Container(
-                                    width: 6.0,
-                                    height: 6.0,
-                                    margin: EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 4.0),
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white.withOpacity(0.4)),
-                                  )
-                                : Container(
-                                    width: 10.0,
-                                    height: 10.0,
-                                    margin: EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 4.0),
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.black.withOpacity(0.9)),
-                                  ));
-                      }).toList(),
-                    )
-                  ],
-                )),
-          ]),
-        ],
-        footer: Footer(
-          child: FooterContent(),
-          backgroundColor: Color(0xFFc3c3c3),
-        ),
-      ),
+      body: FutureBuilder(
+          future: context
+              .read<Product>()
+              .getProductDetailImages(product.productNumber),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            return FooterView(
+              flex: 5,
+              children: [
+                Row(children: [
+                  Expanded(
+                      flex: 6,
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomCenter,
+                        children: [
+                          CarouselSlider(
+                            items: tagImageList,
+                            options: CarouselOptions(
+                              height: 638,
+                              viewportFraction: 1,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              },
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: tagImageList.asMap().entries.map((entry) {
+                              return GestureDetector(
+                                  onTap: () =>
+                                      controller.animateToPage(entry.key),
+                                  child: _current != entry.key
+                                      ? Container(
+                                          width: 6.0,
+                                          height: 6.0,
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 8.0, horizontal: 4.0),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
+                                                  .withOpacity(0.4)),
+                                        )
+                                      : Container(
+                                          width: 10.0,
+                                          height: 10.0,
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 8.0, horizontal: 4.0),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.black
+                                                  .withOpacity(0.9)),
+                                        ));
+                            }).toList(),
+                          )
+                        ],
+                      )),
+                ]),
+              ],
+              footer: Footer(
+                child: FooterContent(),
+                backgroundColor: Color(0xFFc3c3c3),
+              ),
+            );
+          }),
     );
   }
 }

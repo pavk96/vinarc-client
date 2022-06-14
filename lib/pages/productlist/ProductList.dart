@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:vinarc/main.dart';
 
 import '../../post/ProductGet.dart';
 
@@ -19,8 +21,11 @@ class _ProductListState extends State<ProductList> {
   @override
   Widget build(BuildContext context) {
     //?를 붙인 것은 개발용 나중에 String으로 바꿈
-    String? arg =
-        ModalRoute.of(context)!.settings.arguments as String? ?? 'category';
+    context.read<Product>().getAllProduct();
+    List<ProductGet> productData = context.read<Product>().allProduct;
+    print(productData);
+    int arg = ModalRoute.of(context)!.settings.arguments as int;
+
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -32,7 +37,7 @@ class _ProductListState extends State<ProductList> {
           centerTitle: true,
           elevation: 0,
           title: Text(
-            arg,
+            '',
             style: GoogleFonts.taviraj(fontSize: 25),
           ),
           actions: [
@@ -61,59 +66,40 @@ class _ProductListState extends State<ProductList> {
             Padding(padding: EdgeInsets.only(right: 15))
           ],
         ),
-        body: FutureBuilder<List<ProductGet>>(
-            future: _getProduct(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData == false) {
-                return Center(
-                  child: CircularProgressIndicator(color: Color(0xFF384230)),
-                );
-              } else if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Error: ${snapshot.error}',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                );
-              } else {
-                List<ProductGet> productData = snapshot.data;
-                return ListView.builder(
-                  itemBuilder: (context, index) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _listItem(productData, index * 2),
-                        _listItem(productData, index * 2 + 1)
-                      ],
-                    );
-                  },
-                  itemCount: (productData.length / 2).ceil() == 0
-                      ? 0
-                      : (productData.length / 2).ceil().toInt(),
-                );
-              }
-            })
-        // FutureBuilder(
-        //     builder: (context, snapshot) => ListView(
-        //           children: [],
-        //         )),
-        );
-  }
+        body:
+            //  futurebuilder<list<productget>>(
+            //     future: context.read<product>().getallproduct(),
+            //     builder: (buildcontext context, asyncsnapshot snapshot) {
+            //       if (snapshot.hasdata == false) {
+            //         return center(
+            //           child: circularprogressindicator(color: color(0xff384230)),
+            //         );
+            //       } else if (snapshot.haserror) {
+            //         return padding(
+            //           padding: const edgeinsets.all(8.0),
+            //           child: text(
+            //             'error: ${snapshot.error}',
+            //             style: textstyle(fontsize: 15),
+            //           ),
+            //         );
+            //       } else {
+            // List<ProductGet> productData = snapshot.data;
+            ListView.builder(
+          itemBuilder: (context, index) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _listItem(productData, index * 2),
+                _listItem(productData, index * 2 + 1)
+              ],
+            );
+          },
+          itemCount: (productData.length / 2).ceil() == 0
+              ? 0
+              : (productData.length / 2).ceil().toInt(),
+        ));
 
-  Future<List<ProductGet>> _getProduct() async {
-    final response =
-        await http.get(Uri.parse('https://flyingstone.me/myapi/product'));
-    List<ProductGet> productList = [];
-    if (response.statusCode == 200) {
-      for (var item in json.decode(response.body)) {
-        productList.add(ProductGet.fromJson(item));
-      }
-      print(productList);
-      return productList;
-    } else {
-      throw Exception("asdfasdf");
-    }
+    // }));
   }
 
   Widget _listItem(List<ProductGet> productData, index) {
@@ -132,11 +118,11 @@ class _ProductListState extends State<ProductList> {
               GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, '/productdetail',
-                      arguments: productData[index].productNumber);
+                      arguments: productData[index]);
                 },
                 child: Image.network(
                     'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
-                        productData[index].productThumnailUrl!,
+                        productData[index].productThumnailUrl,
                     width: MediaQuery.of(context).size.width / 2.3,
                     height: MediaQuery.of(context).size.width / 1.76,
                     fit: BoxFit.cover),
@@ -157,14 +143,14 @@ class _ProductListState extends State<ProductList> {
             ],
           ),
           Text(
-            productData[index].productName!,
+            productData[index].productName,
             style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'NotoSansCJKkr'),
           ),
           Text(
-            productData[index].productSize!,
+            productData[index].productSize,
             style: TextStyle(
                 fontSize: 13,
                 fontFamily: 'NotoSansCJKkr',

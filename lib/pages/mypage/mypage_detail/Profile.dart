@@ -59,13 +59,13 @@ class _ProfileState extends State<Profile> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              ProfileEdit(div: "이름", value: userData.userName!),
+                              ProfileEdit(div: "이름", value: userData.userName),
                               ProfileEdit(
-                                  div: "생년월일", value: userData.userBirth!),
+                                  div: "생년월일", value: userData.userBirth),
                               ProfileEdit(
-                                  div: "휴대폰", value: userData.userPhone!),
+                                  div: "휴대폰", value: userData.userPhone),
                               ProfileEdit(
-                                  div: "이메일 주소", value: userData.userEmail!),
+                                  div: "이메일 주소", value: userData.userEmail),
                             ]),
                       ),
                       Padding(

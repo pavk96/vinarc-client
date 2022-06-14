@@ -299,20 +299,20 @@ class _AddressListPageState extends State<AddressListPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  userAddress.addressNickname!,
+                                  userAddress.addressNickname,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFFB4B4B4),
                                       fontSize: 14,
                                       fontFamily: 'NotoSansCJKkr'),
                                 ),
-                                Text(userAddress.addressContext!,
+                                Text(userAddress.addressContext,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Color(0xFFB4B4B4),
                                         fontSize: 14,
                                         fontFamily: 'NotoSansCJKkr')),
-                                Text(userAddress.addressReceiverPhoneNumber!,
+                                Text(userAddress.addressReceiverPhoneNumber,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Color(0xFFB4B4B4),
@@ -384,8 +384,7 @@ class _AddressListPageState extends State<AddressListPage> {
                                                     onPressed: () {
                                                       Navigator.pop(context);
                                                       _updateUserAddress(
-                                                          userAddress
-                                                              .addressId!,
+                                                          userAddress.addressId,
                                                           addressNicknameController
                                                               .text,
                                                           addressContextController
@@ -428,7 +427,7 @@ class _AddressListPageState extends State<AddressListPage> {
                                                       Navigator.pop(context);
                                                       _deleteUserAddress(
                                                           userAddress
-                                                              .addressId!);
+                                                              .addressId);
                                                     },
                                                     child: Text("Yes",
                                                         style: TextStyle(
