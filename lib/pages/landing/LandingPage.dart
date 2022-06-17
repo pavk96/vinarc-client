@@ -6,6 +6,7 @@ import 'package:footer/footer_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:vinarc/Helper.dart';
 import 'package:vinarc/pages/landing/HamburgerMenu.dart';
 import 'package:vinarc/post/CategoryGet.dart';
 
@@ -19,7 +20,39 @@ class LandingPage extends StatefulWidget {
   State<LandingPage> createState() => _LandingPageState();
 }
 
-class _LandingPageState extends State<LandingPage> {
+class _LandingPageState extends State<LandingPage> with RouteAware {
+  @override
+  void didPush() {
+    print('HomePage: Called didPush');
+    super.didPush();
+  }
+
+  @override
+  void didPop() {
+    print('HomePage: Called didPop');
+    super.didPop();
+  }
+
+  @override
+  void didPopNext() {
+    print('HomePage: Called didPopNext');
+    super.didPopNext();
+  }
+
+  @override
+  void didPushNext() {
+    print('HomePage: Called didPushNext');
+    super.didPushNext();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      routeObserver.subscribe(this, ModalRoute.of(context)!);
+    });
+  }
+
   CarouselController mainImageController = CarouselController();
   CarouselController reviewController = CarouselController();
 

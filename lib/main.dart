@@ -5,6 +5,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:vinarc/Theme/theme.dart';
+import 'package:vinarc/Helper.dart';
 import 'package:vinarc/pages/landing/LandingPage.dart';
 import 'package:vinarc/pages/login/LoginLayout.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/AddressListPage.dart';
@@ -21,14 +22,16 @@ import 'package:vinarc/pages/mypage/mypage_detail/Coupon.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/Profile.dart';
 import 'package:vinarc/post/CategoryGet.dart';
 import 'package:vinarc/post/ProductDetailImage.dart';
+import 'package:vinarc/post/ProductGet.dart';
 import 'package:vinarc/util/DynamicLink.dart';
 import 'package:http/http.dart' as http;
-import '../../post/ProductGet.dart';
 
 void main() {
   setPathUrlStrategy();
   runApp(const MyApp());
 }
+
+final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
 
 class Product extends ChangeNotifier {
   List<ProductGet> allProduct = [];
@@ -104,6 +107,7 @@ class MyApp extends StatelessWidget {
         theme: theme,
         debugShowCheckedModeBanner: false,
         home: LandingPage(),
+        navigatorObservers: [routeObserver],
         routes: {
           '/login': (context) => LoginLayout(),
           '/signup': (context) => Signup(),

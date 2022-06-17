@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:vinarc/main.dart';
+import 'package:vinarc/post/CategoryGet.dart';
 
 import '../../post/ProductGet.dart';
 
@@ -25,7 +26,7 @@ class _ProductListState extends State<ProductList> {
     List<ProductGet> productData = context.read<Product>().allProduct;
     print(productData);
     int arg = ModalRoute.of(context)!.settings.arguments as int;
-
+    CategoryGet category;
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -117,8 +118,10 @@ class _ProductListState extends State<ProductList> {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, '/productdetail',
-                      arguments: productData[index]);
+                  Navigator.pushNamed(
+                    context,
+                    '/productdetail',
+                  );
                 },
                 child: Image.network(
                     'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
