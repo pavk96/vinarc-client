@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +12,8 @@ import 'package:vinarc/post/CategoryGet.dart';
 import '../../post/ProductGet.dart';
 
 class ProductList extends StatefulWidget {
-  const ProductList({Key? key}) : super(key: key);
+  final String arg;
+  const ProductList({Key? key, required this.arg}) : super(key: key);
 
   @override
   State<ProductList> createState() => _ProductListState();
@@ -22,16 +24,19 @@ class _ProductListState extends State<ProductList> {
   @override
   Widget build(BuildContext context) {
     //?를 붙인 것은 개발용 나중에 String으로 바꿈
-    context.read<Product>().getAllProduct();
-    List<ProductGet> productData = context.read<Product>().allProduct;
-    print(productData);
-    int arg = ModalRoute.of(context)!.settings.arguments as int;
+
+    // context.read<Product>().getAllProduct();
+    // List<ProductGet> productData = context.read<Product>().allProduct;
+    int arg = ModalRoute.of(context)!.settings.arguments != null
+        ? ModalRoute.of(context)!.settings.arguments as int
+        : -1;
+
     CategoryGet category;
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Modular.to.pop(context);
               },
               icon: Icon(Icons.arrow_back_ios)),
           backgroundColor: Color(0x00ffffff),
@@ -67,38 +72,39 @@ class _ProductListState extends State<ProductList> {
             Padding(padding: EdgeInsets.only(right: 15))
           ],
         ),
-        body:
-            //  futurebuilder<list<productget>>(
-            //     future: context.read<product>().getallproduct(),
-            //     builder: (buildcontext context, asyncsnapshot snapshot) {
-            //       if (snapshot.hasdata == false) {
-            //         return center(
-            //           child: circularprogressindicator(color: color(0xff384230)),
-            //         );
-            //       } else if (snapshot.haserror) {
-            //         return padding(
-            //           padding: const edgeinsets.all(8.0),
-            //           child: text(
-            //             'error: ${snapshot.error}',
-            //             style: textstyle(fontsize: 15),
-            //           ),
-            //         );
-            //       } else {
-            // List<ProductGet> productData = snapshot.data;
-            ListView.builder(
-          itemBuilder: (context, index) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _listItem(productData, index * 2),
-                _listItem(productData, index * 2 + 1)
-              ],
-            );
-          },
-          itemCount: (productData.length / 2).ceil() == 0
-              ? 0
-              : (productData.length / 2).ceil().toInt(),
-        ));
+        body: FutureBuilder<List<ProductGet>>(
+            future: _getAllProductInCategory(widget.arg),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData == false) {
+                return Center(
+                  child: CircularProgressIndicator(color: Color(0xff384230)),
+                );
+              } else if (snapshot.hasError) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'error: ${snapshot.error}',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                );
+              } else {
+                List<ProductGet> productData = snapshot.data;
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _listItem(productData, index * 2),
+                        _listItem(productData, index * 2 + 1)
+                      ],
+                    );
+                  },
+                  itemCount: (productData.length / 2).ceil() == 0
+                      ? 0
+                      : (productData.length / 2).ceil().toInt(),
+                );
+              }
+            }));
 
     // }));
   }
@@ -169,6 +175,24 @@ class _ProductListState extends State<ProductList> {
           )
         ]),
       );
+    }
+  }
+
+  Future<List<ProductGet>> _getAllProductInCategory(categoryId) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product/in/category?category-id=' +
+            categoryId));
+    List<ProductGet> productInCategoryList = [];
+    if (response.statusCode == 200) {
+      print(json.decode(response.body).length);
+      for (var i = 0; i < json.decode(response.body).length; i++) {
+        print(i);
+        productInCategoryList
+            .add(ProductGet.fromJson(json.decode(response.body)[i]));
+      }
+      return productInCategoryList;
+    } else {
+      throw Exception("아직 상품이 준비되지 않았습니다.");
     }
   }
 }

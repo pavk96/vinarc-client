@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -28,7 +29,20 @@ import 'package:http/http.dart' as http;
 
 void main() {
   setPathUrlStrategy();
-  runApp(const MyApp());
+  runApp(ModularApp(module: AppModule(), child: const MyApp()));
+}
+
+class AppModule extends Module {
+  @override
+  List<Bind> get binds => [];
+
+  @override
+  List<ModularRoute> get routes => [
+        ChildRoute('/', child: (context, args) => LandingPage()),
+        ChildRoute('/productlist',
+            child: (context, args) =>
+                ProductList(arg: args.queryParams['category-id']!)),
+      ];
 }
 
 final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
@@ -100,29 +114,36 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (BuildContext context) => Product(),
-      child: MaterialApp(
-        initialRoute: '/',
-        title: 'Vinarc',
-        theme: theme,
-        debugShowCheckedModeBanner: false,
-        home: LandingPage(),
-        navigatorObservers: [routeObserver],
-        routes: {
-          '/login': (context) => LoginLayout(),
-          '/signup': (context) => Signup(),
-          '/mypage': (context) => MyPage(),
-          '/profile': (context) => Profile(),
-          '/cart': (context) => Cart(),
-          '/coupon': (context) => Coupon(),
-          '/tracking': (context) => TrackingOrderAndShipment(),
-          '/address': (context) => AddressListPage(),
-          '/refund': (context) => RefundAndExchange(),
-          '/recentproduct': (context) => RecentViewedProduct(),
-          '/productlist': (context) => ProductList(),
-          '/productdetail': (context) => ProductDetail(),
-        },
-      ),
-    );
+        create: (BuildContext context) => Product(),
+        child: MaterialApp.router(
+          title: 'Vinarc',
+          theme: theme,
+          debugShowCheckedModeBanner: false,
+          routeInformationParser: Modular.routeInformationParser,
+          routerDelegate: Modular.routerDelegate,
+        )
+        // MaterialApp(
+        //   initialRoute: '/',
+        //   title: 'Vinarc',
+        //   theme: theme,
+        //   debugShowCheckedModeBanner: false,
+        //   home: LandingPage(),
+        //   navigatorObservers: [routeObserver],
+        //   routes: {
+        //     '/login': (context) => LoginLayout(),
+        //     '/signup': (context) => Signup(),
+        //     '/mypage': (context) => MyPage(),
+        //     '/profile': (context) => Profile(),
+        //     '/cart': (context) => Cart(),
+        //     '/coupon': (context) => Coupon(),
+        //     '/tracking': (context) => TrackingOrderAndShipment(),
+        //     '/address': (context) => AddressListPage(),
+        //     '/refund': (context) => RefundAndExchange(),
+        //     '/recentproduct': (context) => RecentViewedProduct(),
+        //     '/productlist': (context) => ProductList(),
+        //     '/productdetail': (context) => ProductDetail(),
+        //   },
+        // ),
+        );
   }
 }

@@ -22,13 +22,13 @@ class ProductGet {
       required this.productThumnailUrl});
   factory ProductGet.fromJson(Map<String, dynamic> json) {
     return ProductGet(
-        productNumber: json['product_number'],
-        shippingFee: json['shipping_fee'],
-        productName: json['product_name'],
-        productSize: json['product_size'],
-        productPrice: json['product_price'],
-        productSortNumber: json['product_sort_number'],
-        productClass: json['product_class'],
-        productThumnailUrl: json['product_thumnail_url']);
+        productNumber: json['product_product_number'],
+        shippingFee: json['product_shipping_fee'],
+        productName: json['product_product_name'],
+        productSize: json['product_product_size'],
+        productPrice: json['product_product_price'],
+        productSortNumber: json['product_product_sort_number'],
+        productClass: json['product_product_class'],
+        productThumnailUrl: json['product_product_thumnail_url']);
   }
 }

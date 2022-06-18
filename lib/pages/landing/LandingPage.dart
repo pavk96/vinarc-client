@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:footer/footer.dart';
 import 'package:footer/footer_view.dart';
@@ -9,6 +12,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:vinarc/Helper.dart';
 import 'package:vinarc/pages/landing/HamburgerMenu.dart';
 import 'package:vinarc/post/CategoryGet.dart';
+import 'package:http/http.dart' as http;
 
 import '../../main.dart';
 import '../layout/Footer.dart';
@@ -48,7 +52,7 @@ class _LandingPageState extends State<LandingPage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       routeObserver.subscribe(this, ModalRoute.of(context)!);
     });
   }
@@ -221,7 +225,7 @@ class _LandingPageState extends State<LandingPage> with RouteAware {
 
               //category
               FutureBuilder(
-                  future: context.read<Product>().getAllCategory(),
+                  future: getAllCategory(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.hasData == false) {
                       return Center(
@@ -606,9 +610,22 @@ class _LandingPageState extends State<LandingPage> with RouteAware {
         ]),
         onTap: () async {
           int arg = categoryData.categoryId;
-          await context.read<Product>().getAllProduct();
-          Navigator.pushNamed(context, '/productlist', arguments: arg);
+          Modular.to.navigate('/productlist?category-id=' + arg.toString());
         });
+  }
+
+  Future<List<CategoryGet>> getAllCategory() async {
+    final response = await http
+        .get(Uri.parse('https://flyingstone.me/myapi/product/category'));
+    List<CategoryGet> categoryList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        categoryList.add(CategoryGet.fromJson(item));
+      }
+      return categoryList;
+    } else {
+      throw Exception("아직 Category가 등록되지 않았습니다.");
+    }
   }
 }
 
