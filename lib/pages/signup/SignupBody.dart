@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -200,7 +201,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                                     if (result['success']) {
                                       Navigator.of(context).pushNamed('/login');
                                     } else {
-                                      Navigator.pop(context);
+                                      Modular.to.pop(context);
                                     }
                                   },
                                   icon: Icon(Icons.favorite_rounded))

@@ -52,9 +52,9 @@ class _LandingPageState extends State<LandingPage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      routeObserver.subscribe(this, ModalRoute.of(context)!);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   routeObserver.subscribe(this, ModalRoute.of(context)!);
+    // });
   }
 
   CarouselController mainImageController = CarouselController();

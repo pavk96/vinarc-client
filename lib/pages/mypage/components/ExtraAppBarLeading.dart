@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class ExtraAppBarLeading extends StatelessWidget {
   const ExtraAppBarLeading({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class ExtraAppBarLeading extends StatelessWidget {
         size: 30,
       ),
       onPressed: () {
-        Navigator.pop(context);
+        Modular.to.pop(context);
       },
     );
   }

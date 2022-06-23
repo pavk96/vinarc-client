@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:vinarc/pages/mypage/layout/ProfileAndAddressLayout.dart';
@@ -111,7 +112,7 @@ class _AddressListPageState extends State<AddressListPage> {
                             //   actions: [
                             //     TextButton(
                             //         onPressed: () {
-                            //           Navigator.pop(context);
+                            //                        Modular.to.pop(context);
                             //         },
                             //         child: Text(
                             //           "Cancel",
@@ -120,7 +121,7 @@ class _AddressListPageState extends State<AddressListPage> {
                             //         )),
                             //     TextButton(
                             //         onPressed: () {
-                            //           Navigator.pop(context);
+                            //                        Modular.to.pop(context);
 
                             //           String body = json.encode({
                             //             "addressNickname":
@@ -240,7 +241,7 @@ class _AddressListPageState extends State<AddressListPage> {
                           //         actions: [
                           //           TextButton(
                           //               onPressed: () {
-                          //                 Navigator.pop(context);
+                          //                              Modular.to.pop(context);
                           //               },
                           //               child: Text(
                           //                 "Cancel",
@@ -249,7 +250,7 @@ class _AddressListPageState extends State<AddressListPage> {
                           //               )),
                           //           TextButton(
                           //               onPressed: () {
-                          //                 Navigator.pop(context);
+                          //                              Modular.to.pop(context);
 
                           //                 String body = json.encode({
                           //                   "addressNickname":
@@ -372,7 +373,7 @@ class _AddressListPageState extends State<AddressListPage> {
                                               actions: [
                                                 TextButton(
                                                     onPressed: () {
-                                                      Navigator.pop(context);
+                                                      Modular.to.pop(context);
                                                     },
                                                     child: Text(
                                                       "Cancel",
@@ -382,7 +383,7 @@ class _AddressListPageState extends State<AddressListPage> {
                                                     )),
                                                 TextButton(
                                                     onPressed: () {
-                                                      Navigator.pop(context);
+                                                      Modular.to.pop(context);
                                                       _updateUserAddress(
                                                           userAddress.addressId,
                                                           addressNicknameController
@@ -416,7 +417,7 @@ class _AddressListPageState extends State<AddressListPage> {
                                               actions: [
                                                 TextButton(
                                                     onPressed: () {
-                                                      Navigator.pop(context);
+                                                      Modular.to.pop(context);
                                                     },
                                                     child: Text("NO",
                                                         style: TextStyle(
@@ -424,7 +425,7 @@ class _AddressListPageState extends State<AddressListPage> {
                                                                 0xFF384230)))),
                                                 TextButton(
                                                     onPressed: () {
-                                                      Navigator.pop(context);
+                                                      Modular.to.pop(context);
                                                       _deleteUserAddress(
                                                           userAddress
                                                               .addressId);

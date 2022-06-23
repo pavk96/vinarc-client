@@ -10,16 +10,19 @@ class ProductGet {
   final String productSortNumber;
   final int productClass;
   final String productThumnailUrl;
+  final String categoryName;
 
-  ProductGet(
-      {required this.productNumber,
-      required this.shippingFee,
-      required this.productName,
-      required this.productSize,
-      required this.productPrice,
-      required this.productSortNumber,
-      required this.productClass,
-      required this.productThumnailUrl});
+  ProductGet({
+    required this.productNumber,
+    required this.shippingFee,
+    required this.productName,
+    required this.productSize,
+    required this.productPrice,
+    required this.productSortNumber,
+    required this.productClass,
+    required this.productThumnailUrl,
+    required this.categoryName,
+  });
   factory ProductGet.fromJson(Map<String, dynamic> json) {
     return ProductGet(
         productNumber: json['product_product_number'],
@@ -29,6 +32,7 @@ class ProductGet {
         productPrice: json['product_product_price'],
         productSortNumber: json['product_product_sort_number'],
         productClass: json['product_product_class'],
-        productThumnailUrl: json['product_product_thumnail_url']);
+        productThumnailUrl: json['product_product_thumnail_url'],
+        categoryName: json['category_category_name']);
   }
 }

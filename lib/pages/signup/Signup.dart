@@ -5,6 +5,7 @@ import 'package:bootpay/model/item.dart';
 import 'package:bootpay/model/payload.dart';
 import 'package:bootpay/model/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vinarc/pages/login/LoginLayout.dart';
 
@@ -68,7 +69,7 @@ class _SignupState extends State<Signup> {
               child: IconButton(
                 icon: Icon(Icons.arrow_back_ios),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Modular.to.pop(context);
                 },
               )),
           title: Padding(

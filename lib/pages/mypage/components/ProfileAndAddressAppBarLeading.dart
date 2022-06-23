@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class ProfileAndAddressAppBarLeading extends StatelessWidget {
   const ProfileAndAddressAppBarLeading({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class ProfileAndAddressAppBarLeading extends StatelessWidget {
           size: 30,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Modular.to.pop(context);
         },
       ),
     );

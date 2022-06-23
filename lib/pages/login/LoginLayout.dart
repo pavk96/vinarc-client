@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'LoginBody.dart';
@@ -18,7 +19,7 @@ class LoginLayout extends StatelessWidget {
             child: IconButton(
               icon: Icon(Icons.arrow_back_ios),
               onPressed: () {
-                Navigator.pop(context);
+                Modular.to.pop(context);
               },
             )),
         title: Padding(

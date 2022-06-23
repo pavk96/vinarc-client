@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,10 +11,12 @@ import 'package:vinarc/main.dart';
 import 'package:vinarc/post/ProductDetailImage.dart';
 import 'package:vinarc/post/ProductGet.dart';
 
+import 'package:http/http.dart' as http;
 import '../layout/Footer.dart';
 
 class ProductDetail extends StatefulWidget {
-  ProductDetail({Key? key}) : super(key: key);
+  final String arg;
+  const ProductDetail({Key? key, required this.arg}) : super(key: key);
 
   @override
   State<ProductDetail> createState() => _ProductDetailState();
@@ -78,9 +82,7 @@ class _ProductDetailState extends State<ProductDetail> {
       ),
       extendBodyBehindAppBar: true,
       body: FutureBuilder(
-          future: context
-              .read<Product>()
-              .getProductDetailImages(product.productNumber),
+          future: _getProductDetailImages(widget.arg),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             return FooterView(
               flex: 5,
@@ -143,5 +145,20 @@ class _ProductDetailState extends State<ProductDetail> {
             );
           }),
     );
+  }
+
+  Future<List<ProductDetailImage>> _getProductDetailImages(
+      String productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product?productNumber=' + productNumber));
+    List<ProductDetailImage> productDetailImageList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        productDetailImageList.add(ProductDetailImage.fromJson(item));
+      }
+      return productDetailImageList;
+    } else {
+      throw Exception("이미지를 등록해 주세요.");
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class ProfileEdit extends StatelessWidget {
   final String div;
@@ -35,7 +36,7 @@ class ProfileEdit extends StatelessWidget {
                             actions: [
                               TextButton(
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Modular.to.pop(context);
                                   },
                                   child: Text(
                                     "Cancel",
@@ -43,7 +44,7 @@ class ProfileEdit extends StatelessWidget {
                                   )),
                               TextButton(
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Modular.to.pop(context);
                                     _changeProfile(div, changeController.text);
                                   },
                                   child: Text("Yes",

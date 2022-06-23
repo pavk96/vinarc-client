@@ -39,9 +39,26 @@ class AppModule extends Module {
   @override
   List<ModularRoute> get routes => [
         ChildRoute('/', child: (context, args) => LandingPage()),
+        ChildRoute('/login', child: (context, args) => LoginLayout()),
+        ChildRoute('/signup', child: ((context, args) => Signup())),
+        ChildRoute('/mypage', child: (context, args) => MyPage()),
+        ChildRoute('/profile', child: (context, args) => Profile()),
+        ChildRoute('/cart', child: (context, args) => Cart()),
+        ChildRoute('/coupon', child: (context, args) => Coupon()),
+        ChildRoute('/tracking',
+            child: (context, args) => TrackingOrderAndShipment()),
+        ChildRoute('/tracking',
+            child: (context, args) => TrackingOrderAndShipment()),
+        ChildRoute('/address', child: (context, args) => AddressListPage()),
+        ChildRoute('/refund', child: (context, args) => RefundAndExchange()),
+        ChildRoute('/recentproduct',
+            child: (context, args) => RecentViewedProduct()),
         ChildRoute('/productlist',
             child: (context, args) =>
                 ProductList(arg: args.queryParams['category-id']!)),
+        ChildRoute('/productdetail',
+            child: (context, args) =>
+                ProductDetail(arg: args.queryParams['product-number']!)),
       ];
 }
 

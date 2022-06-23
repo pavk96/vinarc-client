@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class HamburgerMenu extends StatelessWidget {
   const HamburgerMenu({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class HamburgerMenu extends StatelessWidget {
           padding: EdgeInsets.zero,
           constraints: BoxConstraints(),
           onPressed: () {
-            Navigator.pop(context);
+            Modular.to.pop(context);
           },
           iconSize: 30,
           icon: Icon(
