@@ -49,7 +49,7 @@ class _ProductListState extends State<ProductList> {
                     IconButton(
                       icon: Icon(Icons.shopping_cart),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/cart');
+                        Modular.to.pushNamed('/cart');
                       },
                     ),
                     IconButton(
@@ -63,9 +63,9 @@ class _ProductListState extends State<ProductList> {
                                 builder: (context) {
                                   return AlertDialog(title: Text("로그인 하고 오세요"));
                                 });
-                            Navigator.pushNamed(context, '/login');
+                            Modular.to.pushNamed('/login');
                           } else {
-                            Navigator.pushNamed(context, '/mypage');
+                            Modular.to.pushNamed('/mypage');
                           }
                         }),
                     Padding(padding: EdgeInsets.only(right: 15))
@@ -93,7 +93,7 @@ class _ProductListState extends State<ProductList> {
                     IconButton(
                       icon: Icon(Icons.shopping_cart),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/cart');
+                        Modular.to.pushNamed('/cart');
                       },
                     ),
                     IconButton(
@@ -107,9 +107,9 @@ class _ProductListState extends State<ProductList> {
                                 builder: (context) {
                                   return AlertDialog(title: Text("로그인 하고 오세요"));
                                 });
-                            Navigator.pushNamed(context, '/login');
+                            Modular.to.pushNamed('/login');
                           } else {
-                            Navigator.pushNamed(context, '/mypage');
+                            Modular.to.pushNamed('/mypage');
                           }
                         }),
                     Padding(padding: EdgeInsets.only(right: 15))
@@ -128,21 +128,21 @@ class _ProductListState extends State<ProductList> {
                 appBar: AppBar(
                   leading: IconButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Modular.to.pop(context);
                       },
                       icon: Icon(Icons.arrow_back_ios)),
                   backgroundColor: Color(0x00ffffff),
                   centerTitle: true,
                   elevation: 0,
                   title: Text(
-                    productData[0].categoryName,
+                    categoryName,
                     style: GoogleFonts.taviraj(fontSize: 25),
                   ),
                   actions: [
                     IconButton(
                       icon: Icon(Icons.shopping_cart),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/cart');
+                        Modular.to.pushNamed('/cart');
                       },
                     ),
                     IconButton(
@@ -156,9 +156,9 @@ class _ProductListState extends State<ProductList> {
                                 builder: (context) {
                                   return AlertDialog(title: Text("로그인 하고 오세요"));
                                 });
-                            Navigator.pushNamed(context, '/login');
+                            Modular.to.pushNamed('/login');
                           } else {
-                            Navigator.pushNamed(context, '/mypage');
+                            Modular.to.pushNamed('/mypage');
                           }
                         }),
                     Padding(padding: EdgeInsets.only(right: 15))
@@ -197,10 +197,8 @@ class _ProductListState extends State<ProductList> {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/productdetail',
-                  );
+                  Modular.to.pushNamed('/productdetail?product-number=' +
+                      productData[index].productNumber.toString());
                 },
                 child: Image.network(
                     'https://vinarc.s3.ap-northeast-2.amazonaws.com' +

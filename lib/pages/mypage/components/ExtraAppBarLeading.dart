@@ -13,7 +13,7 @@ class ExtraAppBarLeading extends StatelessWidget {
         size: 30,
       ),
       onPressed: () {
-        Modular.to.pop(context);
+        Modular.to.pop();
       },
     );
   }

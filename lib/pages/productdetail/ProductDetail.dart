@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:footer/footer.dart';
 import 'package:footer/footer_view.dart';
@@ -40,15 +41,15 @@ class _ProductDetailState extends State<ProductDetail> {
   @override
   Widget build(BuildContext context) {
     int _current = 0;
-    ProductGet product =
-        ModalRoute.of(context)!.settings.arguments as ProductGet;
+    // ProductGet product =
+    //     ModalRoute.of(context)!.settings.arguments as ProductGet;
     // List<ProductDetailImage> productDetailImageList =
     //     context.read<Product>().getProductDetailImages(product!.productNumber) as List<ProductDetailImage>;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              Modular.to.pop(context);
             },
             icon: Icon(Icons.arrow_back_ios)),
         backgroundColor: Color(0x00ffffff),
@@ -58,7 +59,7 @@ class _ProductDetailState extends State<ProductDetail> {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              Navigator.pushNamed(context, '/cart');
+              Modular.to.pushNamed('/cart');
             },
           ),
           IconButton(
@@ -72,9 +73,9 @@ class _ProductDetailState extends State<ProductDetail> {
                       builder: (context) {
                         return AlertDialog(title: Text("로그인 하고 오세요"));
                       });
-                  Navigator.pushNamed(context, '/login');
+                  Modular.to.pushNamed('/login');
                 } else {
-                  Navigator.pushNamed(context, '/mypage');
+                  Modular.to.pushNamed('/mypage');
                 }
               }),
           Padding(padding: EdgeInsets.only(right: 15))
