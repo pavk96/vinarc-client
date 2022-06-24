@@ -26,18 +26,6 @@ class ProductDetail extends StatefulWidget {
 class _ProductDetailState extends State<ProductDetail> {
   CarouselController controller = CarouselController();
 
-  List<Widget> tagImageList = [
-    Container(
-      decoration: BoxDecoration(color: Colors.red),
-    ),
-    Container(
-      decoration: BoxDecoration(color: Colors.blue),
-    ),
-    Container(
-      decoration: BoxDecoration(color: Colors.red),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     int _current = 0;
@@ -83,8 +71,13 @@ class _ProductDetailState extends State<ProductDetail> {
       ),
       extendBodyBehindAppBar: true,
       body: FutureBuilder(
-          future: _getProductDetailImages(widget.arg),
+          future: _getProductDetail(widget.arg),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData == false) {
+              return Center(
+                child: CircularProgressIndicator(color: Color(0xff384230)),
+              );
+            }
             return FooterView(
               flex: 5,
               children: [
@@ -95,7 +88,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         alignment: AlignmentDirectional.bottomCenter,
                         children: [
                           CarouselSlider(
-                            items: tagImageList,
+                            items: _detailImage(snapshot.data['detailImage']),
                             options: CarouselOptions(
                               height: 638,
                               viewportFraction: 1,
@@ -108,7 +101,10 @@ class _ProductDetailState extends State<ProductDetail> {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: tagImageList.asMap().entries.map((entry) {
+                            children: _detailImage(snapshot.data['detailImage'])
+                                .asMap()
+                                .entries
+                                .map((entry) {
                               return GestureDetector(
                                   onTap: () =>
                                       controller.animateToPage(entry.key),
@@ -148,10 +144,50 @@ class _ProductDetailState extends State<ProductDetail> {
     );
   }
 
+  List<Widget> _detailImage(List<ProductDetailImage> detailImageInfoList) {
+    List<Widget> detailImageList = [];
+    detailImageInfoList.forEach((element) {
+      detailImageList.add(Container(
+        child: Image.network(
+            'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+                element.productImageUrl,
+            fit: BoxFit.contain,
+            width: double.infinity),
+      ));
+    });
+
+    print(detailImageList.runtimeType);
+    return detailImageList;
+  }
+
+  Future<dynamic> _getProductDetail(productNumber) async {
+    final detailImage = await _getProductDetailImages(productNumber);
+    final materialAndColor = await _getProductMaterialAndColor(productNumber);
+    print(detailImage);
+
+    return {'detailImage': detailImage, 'materialAndColor': materialAndColor};
+  }
+
   Future<List<ProductDetailImage>> _getProductDetailImages(
       String productNumber) async {
     final response = await http.get(Uri.parse(
         'https://flyingstone.me/myapi/product?productNumber=' + productNumber));
+    List<ProductDetailImage> productDetailImageList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        productDetailImageList.add(ProductDetailImage.fromJson(item));
+      }
+      return productDetailImageList;
+    } else {
+      throw Exception("이미지를 등록해 주세요.");
+    }
+  }
+
+  Future<List<ProductDetailImage>> _getProductMaterialAndColor(
+      String productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product/material/and/color?productNumber=' +
+            productNumber));
     List<ProductDetailImage> productDetailImageList = [];
     if (response.statusCode == 200) {
       for (var item in json.decode(response.body)) {
