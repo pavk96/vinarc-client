@@ -9,10 +9,11 @@ import 'package:footer/footer_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:vinarc/main.dart';
-import 'package:vinarc/post/ProductDetailImage.dart';
+import 'package:vinarc/post/ProductDetailImageGet.dart';
 import 'package:vinarc/post/ProductGet.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:vinarc/post/ProductMaterialAndColorGet.dart';
 import '../layout/Footer.dart';
 
 class ProductDetail extends StatefulWidget {
@@ -29,10 +30,7 @@ class _ProductDetailState extends State<ProductDetail> {
   @override
   Widget build(BuildContext context) {
     int _current = 0;
-    // ProductGet product =
-    //     ModalRoute.of(context)!.settings.arguments as ProductGet;
-    // List<ProductDetailImage> productDetailImageList =
-    //     context.read<Product>().getProductDetailImages(product!.productNumber) as List<ProductDetailImage>;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -77,7 +75,18 @@ class _ProductDetailState extends State<ProductDetail> {
               return Center(
                 child: CircularProgressIndicator(color: Color(0xff384230)),
               );
+            } else if (snapshot.hasError) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: TextStyle(fontSize: 15),
+                ),
+              );
             }
+            ProductGet product = snapshot.data['product'];
+            ProductMaterialAndColor materialAndColor =
+                snapshot.data['materialAndColor'][0];
             return FooterView(
               flex: 5,
               children: [
@@ -134,6 +143,67 @@ class _ProductDetailState extends State<ProductDetail> {
                         ],
                       )),
                 ]),
+                Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(22.0),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(product.productName,
+                                style: TextStyle(
+                                    fontFamily: 'NotoSansCJKkr',
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w700)),
+                            Row(
+                              children: _rate(),
+                            ),
+                            Text(product.productPrice,
+                                style: TextStyle(
+                                    fontFamily: 'NotoSansCJKkr',
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w700))
+                          ]),
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(22.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(children: [Text('색상 및 재료')]),
+                            Row(
+                              children: [Text(materialAndColor.colorName)],
+                            )
+                          ],
+                        )),
+                    Padding(
+                      padding: EdgeInsets.all(22.0),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      //-버튼 물건 수량
+                                    },
+                                    icon: Icon(Icons.remove)),
+                                Text("1"),
+                                IconButton(
+                                    onPressed: () {
+                                      //+버튼 물건 수량
+                                    },
+                                    icon: Icon(Icons.add))
+                              ],
+                            ),
+                            Row(
+                              children: [Text("총 상품금액"), Text("여기에 상품 * 수량")],
+                            )
+                          ]),
+                    )
+                  ],
+                )
               ],
               footer: Footer(
                 child: FooterContent(),
@@ -151,42 +221,29 @@ class _ProductDetailState extends State<ProductDetail> {
         child: Image.network(
             'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
                 element.productImageUrl,
-            fit: BoxFit.contain,
+            fit: BoxFit.cover,
             width: double.infinity),
       ));
     });
 
-    print(detailImageList.runtimeType);
     return detailImageList;
   }
 
   Future<dynamic> _getProductDetail(productNumber) async {
     final detailImage = await _getProductDetailImages(productNumber);
     final materialAndColor = await _getProductMaterialAndColor(productNumber);
-    print(detailImage);
-
-    return {'detailImage': detailImage, 'materialAndColor': materialAndColor};
+    final product = await _getProduct(productNumber);
+    return {
+      'detailImage': detailImage,
+      'materialAndColor': materialAndColor,
+      'product': product
+    };
   }
 
   Future<List<ProductDetailImage>> _getProductDetailImages(
       String productNumber) async {
     final response = await http.get(Uri.parse(
-        'https://flyingstone.me/myapi/product?productNumber=' + productNumber));
-    List<ProductDetailImage> productDetailImageList = [];
-    if (response.statusCode == 200) {
-      for (var item in json.decode(response.body)) {
-        productDetailImageList.add(ProductDetailImage.fromJson(item));
-      }
-      return productDetailImageList;
-    } else {
-      throw Exception("이미지를 등록해 주세요.");
-    }
-  }
-
-  Future<List<ProductDetailImage>> _getProductMaterialAndColor(
-      String productNumber) async {
-    final response = await http.get(Uri.parse(
-        'https://flyingstone.me/myapi/product/material/and/color?productNumber=' +
+        'https://flyingstone.me/myapi/product/detail/image?productNumber=' +
             productNumber));
     List<ProductDetailImage> productDetailImageList = [];
     if (response.statusCode == 200) {
@@ -197,5 +254,59 @@ class _ProductDetailState extends State<ProductDetail> {
     } else {
       throw Exception("이미지를 등록해 주세요.");
     }
+  }
+
+  Future<List<ProductMaterialAndColor>> _getProductMaterialAndColor(
+      String productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product/material/and/color?productNumber=' +
+            productNumber));
+    List<ProductMaterialAndColor> productMaaterailAndColorList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        productMaaterailAndColorList
+            .add(ProductMaterialAndColor.fromJson(item));
+      }
+      return productMaaterailAndColorList;
+    } else {
+      throw Exception("색과 원재료를 등록해 주세요 ");
+    }
+  }
+
+  Future<ProductGet> _getProduct(productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product?productNumber=' + productNumber));
+    if (response.statusCode == 200) {
+      ProductGet product = ProductGet.fromJson(json.decode(response.body));
+      return product;
+    } else {
+      throw Exception("상품을 등록해주세요");
+    }
+  }
+
+  List<Widget> _rate() {
+    return [
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Text('25', style: GoogleFonts.roboto(fontSize: 16))
+    ];
   }
 }
