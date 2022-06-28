@@ -188,7 +188,22 @@ class _ProductDetailState extends State<ProductDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(children: [Text('색상 및 재료')]),
+                            Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('색상',
+                                      style: TextStyle(
+                                          color: Color(0xFF3a4432),
+                                          fontFamily: 'NotoSansCJKkr',
+                                          fontSize: 18)),
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(isSelected,
+                                          style: TextStyle(
+                                              color: Color(0xFF3a4432),
+                                              fontSize: 14,
+                                              fontFamily: 'NotoSansCJKkr')))
+                                ]),
                             Row(children: _materialAndColor(materialAndColor))
                           ],
                         )),
@@ -208,18 +223,20 @@ class _ProductDetailState extends State<ProductDetail> {
                                       });
                                     },
                                     icon: Icon(Icons.remove)),
-                                Text(
-                                  productCount.toString(),
-                                  style: TextStyle(
-                                    color: Color(0xFF384230),
-                                    fontSize: 24,
-                                    fontFamily: "NotoSansCJKkr",
+                                Padding(
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  child: Text(
+                                    productCount.toString(),
+                                    style: TextStyle(
+                                      color: Color(0xFF384230),
+                                      fontSize: 24,
+                                      fontFamily: "NotoSansCJKkr",
+                                    ),
                                   ),
                                 ),
                                 IconButton(
                                     onPressed: () {
                                       //+버튼 물건 수량
-                                      print(productCount);
                                       setState(() {
                                         productCount = productCount + 1;
                                       });
@@ -232,6 +249,7 @@ class _ProductDetailState extends State<ProductDetail> {
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text("총 상품금액"),
                                   Text(
@@ -287,25 +305,101 @@ class _ProductDetailState extends State<ProductDetail> {
                         ],
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 30),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 250,
-                          child: CarouselSlider(
-                            items: _relatedProduct(relatedProduct),
-                            options: CarouselOptions(
-                              viewportFraction: 0.3,
-                              enableInfiniteScroll: false,
-                              initialPage: 1,
-                              disableCenter: true,
-                            ),
-                            carouselController: relatedProductController,
+                    Padding(
+                      padding: EdgeInsets.only(top: 30),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 250,
+                        child: CarouselSlider(
+                          items: _relatedProduct(relatedProduct),
+                          options: CarouselOptions(
+                            viewportFraction: 0.3,
+                            enableInfiniteScroll: false,
+                            initialPage: 1,
+                            disableCenter: false,
                           ),
+                          carouselController: relatedProductController,
                         ),
                       ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 45),
+                      child: Container(
+                          decoration: BoxDecoration(color: Color(0xFF384230)),
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 44, bottom: 30.0),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.83,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                      color: Color(0xFF384230),
+                                      borderRadius: BorderRadius.circular(60),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black, blurRadius: 10)
+                                      ]),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
+                                        child: TextButton(
+                                            style: ButtonStyle(),
+                                            onPressed: (() {
+                                              //
+                                            }),
+                                            child: Text(
+                                              "상세설명",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontFamily: 'NotoSansCJKkr',
+                                              ),
+                                            )),
+                                      ),
+                                      Expanded(
+                                        child: TextButton(
+                                            onPressed: (() {}),
+                                            child: Text(
+                                              "구매후기 31",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontFamily: 'NotoSansCJKkr',
+                                              ),
+                                            )),
+                                      ),
+                                      Expanded(
+                                        child: TextButton(
+                                            onPressed: (() {}),
+                                            child: Text(
+                                              "Q&A 10",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontFamily: 'NotoSansCJKkr',
+                                              ),
+                                            )),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(60),
+                                      topRight: Radius.circular(60)),
+                                  child: Image.network(
+                                      'https://vinarc.s3.ap-northeast-2.amazonaws.com/detail/one.png',
+                                      width: double.infinity,
+                                      fit: BoxFit.fill)),
+                            ],
+                          )),
                     )
                   ],
                 )
@@ -424,7 +518,6 @@ class _ProductDetailState extends State<ProductDetail> {
     List<ProductGet> relatedProductList = [];
     if (response.statusCode == 200) {
       for (var item in json.decode(response.body)) {
-        print(item);
         relatedProductList.add(ProductGet.fromJson(item));
       }
       return relatedProductList;
