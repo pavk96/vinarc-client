@@ -13,6 +13,7 @@ import 'package:vinarc/post/ProductDetailImage.dart';
 import 'package:vinarc/post/ProductGet.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:vinarc/post/ProductMaterialAndColor.dart';
 import '../layout/Footer.dart';
 
 class ProductDetail extends StatefulWidget {
@@ -77,7 +78,20 @@ class _ProductDetailState extends State<ProductDetail> {
               return Center(
                 child: CircularProgressIndicator(color: Color(0xff384230)),
               );
+            } else if (snapshot.hasError) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: TextStyle(fontSize: 15),
+                ),
+              );
             }
+            List<ProductDetailImage> detailImage = snapshot.data['detailImage'];
+            List<ProductMaterialAndColor> materialAndColor =
+                snapshot.data['materialAndColor'];
+            ProductGet product = snapshot.data['product'];
+            String colorName = '아이보리';
             return FooterView(
               flex: 5,
               children: [
@@ -134,6 +148,81 @@ class _ProductDetailState extends State<ProductDetail> {
                         ],
                       )),
                 ]),
+                //productInfo
+                Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 57, left: 22, right: 22),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(product.productName,
+                                    style: TextStyle(
+                                        fontFamily: 'NotoSansCJKkr',
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold)),
+                                Row(
+                                  children: _getRate(4.3),
+                                ),
+                                Text(product.productPrice,
+                                    style: GoogleFonts.roboto(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold)),
+                              ]),
+                          Icon(
+                            Icons.share,
+                            color: Color(0xFFD6D6D6),
+                            size: 42,
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 47, left: 22, right: 22),
+                  child: Column(children: [
+                    Row(
+                      children: [
+                        Text("색상",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansCJKkr',
+                              fontSize: 18,
+                            )),
+                        Text(colorName)
+                      ],
+                    ),
+                    SizedBox(
+                      height: 54,
+                      child: ListView.builder(
+                          itemCount: materialAndColor.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            print(index);
+                            return Row(
+                              children: [
+                                IconButton(
+                                    iconSize: 20,
+                                    onPressed: () {
+                                      setState(() {
+                                        colorName = materialAndColor[
+                                                detailImage[index].imageId]
+                                            .colorName;
+                                      });
+                                    },
+                                    icon: Image.network(
+                                        'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+                                            detailImage[1].productImageUrl,
+                                        fit: BoxFit.contain,
+                                        width: double.infinity)),
+                              ],
+                            );
+                          }),
+                    )
+                  ]),
+                )
               ],
               footer: Footer(
                 child: FooterContent(),
@@ -151,42 +240,30 @@ class _ProductDetailState extends State<ProductDetail> {
         child: Image.network(
             'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
                 element.productImageUrl,
-            fit: BoxFit.contain,
+            fit: BoxFit.cover,
             width: double.infinity),
       ));
     });
 
-    print(detailImageList.runtimeType);
     return detailImageList;
   }
 
   Future<dynamic> _getProductDetail(productNumber) async {
     final detailImage = await _getProductDetailImages(productNumber);
     final materialAndColor = await _getProductMaterialAndColor(productNumber);
-    print(detailImage);
+    final product = await _getOneProductInfo(productNumber);
 
-    return {'detailImage': detailImage, 'materialAndColor': materialAndColor};
+    return {
+      'detailImage': detailImage,
+      'materialAndColor': materialAndColor,
+      'product': product
+    };
   }
 
   Future<List<ProductDetailImage>> _getProductDetailImages(
       String productNumber) async {
     final response = await http.get(Uri.parse(
-        'https://flyingstone.me/myapi/product?productNumber=' + productNumber));
-    List<ProductDetailImage> productDetailImageList = [];
-    if (response.statusCode == 200) {
-      for (var item in json.decode(response.body)) {
-        productDetailImageList.add(ProductDetailImage.fromJson(item));
-      }
-      return productDetailImageList;
-    } else {
-      throw Exception("이미지를 등록해 주세요.");
-    }
-  }
-
-  Future<List<ProductDetailImage>> _getProductMaterialAndColor(
-      String productNumber) async {
-    final response = await http.get(Uri.parse(
-        'https://flyingstone.me/myapi/product/material/and/color?productNumber=' +
+        'https://flyingstone.me/myapi/product/detail/image?productNumber=' +
             productNumber));
     List<ProductDetailImage> productDetailImageList = [];
     if (response.statusCode == 200) {
@@ -197,5 +274,49 @@ class _ProductDetailState extends State<ProductDetail> {
     } else {
       throw Exception("이미지를 등록해 주세요.");
     }
+  }
+
+  Future<List<ProductMaterialAndColor>> _getProductMaterialAndColor(
+      String productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product/material/and/color?productNumber=' +
+            productNumber));
+
+    List<ProductMaterialAndColor> productMaterialAndColorList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        productMaterialAndColorList.add(ProductMaterialAndColor.fromJson(item));
+      }
+      return productMaterialAndColorList;
+    } else {
+      throw Exception("이미지를 등록해 주세요.");
+    }
+  }
+
+  Future<ProductGet> _getOneProductInfo(String productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product?productNumber=' + productNumber));
+    ProductGet product = ProductGet.fromJson(json.decode(response.body));
+    return product;
+  }
+
+  List<Widget> _getRate(double productRateAverage) {
+    List<Widget> rate = [];
+    double count = 4.0;
+    for (var i = 0; i < 5; i++) {
+      if (i < productRateAverage.floor()) {
+        rate.add(Icon(Icons.star));
+      } else {
+        rate.add(Icon(
+          Icons.star,
+          color: Color(0xFFB5B5B5),
+        ));
+      }
+    }
+    rate.add(Text(
+      count.toString(),
+      style: TextStyle(fontSize: 16),
+    ));
+    return rate;
   }
 }

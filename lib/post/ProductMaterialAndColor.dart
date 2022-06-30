@@ -1,16 +1,15 @@
 class ProductMaterialAndColor {
-  final int materialId;
-  final int productNumber;
-  final String colorId;
+  final String materialName;
+  final String colorName;
 
-  ProductMaterialAndColor(
-      {required this.materialId,
-      required this.productNumber,
-      required this.colorId});
+  ProductMaterialAndColor({
+    required this.materialName,
+    required this.colorName,
+  });
   factory ProductMaterialAndColor.fromJson(Map<String, dynamic> json) {
     return ProductMaterialAndColor(
-        materialId: json['material_id'],
-        productNumber: json['product_number'],
-        colorId: json['color_id']);
+      materialName: json['material_name'],
+      colorName: json['color_name'],
+    );
   }
 }
