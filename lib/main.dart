@@ -22,7 +22,7 @@ import 'package:vinarc/pages/mypage/MyPageBody.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/Coupon.dart';
 import 'package:vinarc/pages/mypage/mypage_detail/Profile.dart';
 import 'package:vinarc/post/CategoryGet.dart';
-import 'package:vinarc/post/ProductDetailImage.dart';
+import 'package:vinarc/post/ProductDetailImageGet.dart';
 import 'package:vinarc/post/ProductGet.dart';
 import 'package:vinarc/util/DynamicLink.dart';
 import 'package:http/http.dart' as http;

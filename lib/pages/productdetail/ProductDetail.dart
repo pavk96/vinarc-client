@@ -9,11 +9,11 @@ import 'package:footer/footer_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:vinarc/main.dart';
-import 'package:vinarc/post/ProductDetailImage.dart';
+import 'package:vinarc/post/ProductDetailImageGet.dart';
 import 'package:vinarc/post/ProductGet.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:vinarc/post/ProductMaterialAndColor.dart';
+import 'package:vinarc/post/ProductMaterialAndColorGet.dart';
 import '../layout/Footer.dart';
 
 class ProductDetail extends StatefulWidget {
@@ -26,33 +26,41 @@ class ProductDetail extends StatefulWidget {
 
 class _ProductDetailState extends State<ProductDetail> {
   CarouselController controller = CarouselController();
+  CarouselController relatedProductController = CarouselController();
 
+  String isSelected = '';
+  int productCount = 0;
+  int _current = 0;
   @override
   Widget build(BuildContext context) {
-    int _current = 0;
-    // ProductGet product =
-    //     ModalRoute.of(context)!.settings.arguments as ProductGet;
-    // List<ProductDetailImage> productDetailImageList =
-    //     context.read<Product>().getProductDetailImages(product!.productNumber) as List<ProductDetailImage>;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
               Modular.to.pop(context);
             },
-            icon: Icon(Icons.arrow_back_ios)),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Color(0xFF3A4432),
+            )),
         backgroundColor: Color(0x00ffffff),
         centerTitle: true,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: Icon(
+              Icons.shopping_cart,
+              color: Color(0xFF3A4432),
+            ),
             onPressed: () {
               Modular.to.pushNamed('/cart');
             },
           ),
           IconButton(
-              icon: Icon(Icons.person),
+              icon: Icon(
+                Icons.person,
+                color: Color(0xFF3A4432),
+              ),
               onPressed: () async {
                 FlutterSecureStorage storage = FlutterSecureStorage();
                 final token = await storage.read(key: "token");
@@ -87,11 +95,11 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
               );
             }
-            List<ProductDetailImage> detailImage = snapshot.data['detailImage'];
+            ProductGet product = snapshot.data['product'];
             List<ProductMaterialAndColor> materialAndColor =
                 snapshot.data['materialAndColor'];
-            ProductGet product = snapshot.data['product'];
-            String colorName = '아이보리';
+            List<ProductGet> relatedProduct = snapshot.data['relatedProduct'];
+            List<ProductDetailImage> detailImage = snapshot.data['detailImage'];
             return FooterView(
               flex: 5,
               children: [
@@ -102,7 +110,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         alignment: AlignmentDirectional.bottomCenter,
                         children: [
                           CarouselSlider(
-                            items: _detailImage(snapshot.data['detailImage']),
+                            items: _detailImage(detailImage),
                             options: CarouselOptions(
                               height: 638,
                               viewportFraction: 1,
@@ -140,88 +148,260 @@ class _ProductDetailState extends State<ProductDetail> {
                                               vertical: 8.0, horizontal: 4.0),
                                           decoration: BoxDecoration(
                                               shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: Color(0xFF6B6B6B)),
                                               color: Colors.black
-                                                  .withOpacity(0.9)),
+                                                  .withOpacity(0.0)),
                                         ));
                             }).toList(),
                           )
                         ],
                       )),
                 ]),
-                //productInfo
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 57, left: 22, right: 22),
+                      padding: EdgeInsets.all(22.0),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(product.productName,
+                                style: TextStyle(
+                                    color: Color(0xFF3a4432),
+                                    fontFamily: 'NotoSansCJKkr',
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w700)),
+                            Row(
+                              children: _rate(),
+                            ),
+                            Text(product.productPrice + '원',
+                                style: TextStyle(
+                                    color: Color(0xFF3a4432),
+                                    fontFamily: 'NotoSansCJKkr',
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w700))
+                          ]),
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(22.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('색상',
+                                      style: TextStyle(
+                                          color: Color(0xFF3a4432),
+                                          fontFamily: 'NotoSansCJKkr',
+                                          fontSize: 18)),
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(isSelected,
+                                          style: TextStyle(
+                                              color: Color(0xFF3a4432),
+                                              fontSize: 14,
+                                              fontFamily: 'NotoSansCJKkr')))
+                                ]),
+                            Row(children: _materialAndColor(materialAndColor))
+                          ],
+                        )),
+                    Padding(
+                      padding: EdgeInsets.all(22.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(product.productName,
+                                IconButton(
+                                    onPressed: () {
+                                      //-버튼 물건 수량
+                                      setState(() {
+                                        productCount = productCount - 1;
+                                      });
+                                    },
+                                    icon: Icon(Icons.remove)),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  child: Text(
+                                    productCount.toString(),
                                     style: TextStyle(
-                                        fontFamily: 'NotoSansCJKkr',
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold)),
-                                Row(
-                                  children: _getRate(4.3),
+                                      color: Color(0xFF384230),
+                                      fontSize: 24,
+                                      fontFamily: "NotoSansCJKkr",
+                                    ),
+                                  ),
                                 ),
-                                Text(product.productPrice,
-                                    style: GoogleFonts.roboto(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold)),
-                              ]),
-                          Icon(
-                            Icons.share,
-                            color: Color(0xFFD6D6D6),
-                            size: 42,
+                                IconButton(
+                                    onPressed: () {
+                                      //+버튼 물건 수량
+                                      setState(() {
+                                        productCount = productCount + 1;
+                                      });
+                                    },
+                                    icon: Icon(Icons.add))
+                              ],
+                            ),
+                            SizedBox(
+                              width: 180,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text("총 상품금액"),
+                                  Text(
+                                      (int.parse(product.productPrice) *
+                                                  productCount)
+                                              .toString() +
+                                          '원',
+                                      style: GoogleFonts.roboto(
+                                          color: Color(0xFF3A4432),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 24))
+                                ],
+                              ),
+                            )
+                          ]),
+                    ),
+                    Container(
+                        width: double.infinity,
+                        child:
+                            Divider(color: Color(0xFFD6D6D6), thickness: 1.0)),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              width: 342,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(22),
+                                color: Color(0xFF384230),
+                              ),
+                              child: Text("BUY NOW",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      height: 2,
+                                      color: Colors.white,
+                                      fontFamily: 'NotoSansCJKkr',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.shopping_cart,
+                              size: 26,
+                              color: Color(0xFF384230),
+                            ),
                           )
                         ],
                       ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 30),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 250,
+                        child: CarouselSlider(
+                          items: _relatedProduct(relatedProduct),
+                          options: CarouselOptions(
+                            viewportFraction: 0.3,
+                            enableInfiniteScroll: false,
+                            initialPage: 1,
+                            disableCenter: false,
+                          ),
+                          carouselController: relatedProductController,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 45),
+                      child: Container(
+                          decoration: BoxDecoration(color: Color(0xFF384230)),
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 44, bottom: 30.0),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.83,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                      color: Color(0xFF384230),
+                                      borderRadius: BorderRadius.circular(60),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black, blurRadius: 10)
+                                      ]),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
+                                        child: TextButton(
+                                            style: ButtonStyle(),
+                                            onPressed: (() {
+                                              //
+                                            }),
+                                            child: Text(
+                                              "상세설명",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontFamily: 'NotoSansCJKkr',
+                                              ),
+                                            )),
+                                      ),
+                                      Expanded(
+                                        child: TextButton(
+                                            onPressed: (() {}),
+                                            child: Text(
+                                              "구매후기 31",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontFamily: 'NotoSansCJKkr',
+                                              ),
+                                            )),
+                                      ),
+                                      Expanded(
+                                        child: TextButton(
+                                            onPressed: (() {}),
+                                            child: Text(
+                                              "Q&A 10",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontFamily: 'NotoSansCJKkr',
+                                              ),
+                                            )),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(60),
+                                      topRight: Radius.circular(60)),
+                                  child: Image.network(
+                                      'https://vinarc.s3.ap-northeast-2.amazonaws.com/detail/one.png',
+                                      width: double.infinity,
+                                      fit: BoxFit.fill)),
+                            ],
+                          )),
                     )
                   ],
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 47, left: 22, right: 22),
-                  child: Column(children: [
-                    Row(
-                      children: [
-                        Text("색상",
-                            style: TextStyle(
-                              fontFamily: 'NotoSansCJKkr',
-                              fontSize: 18,
-                            )),
-                        Text(colorName)
-                      ],
-                    ),
-                    SizedBox(
-                      height: 54,
-                      child: ListView.builder(
-                          itemCount: materialAndColor.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            print(index);
-                            return Row(
-                              children: [
-                                IconButton(
-                                    iconSize: 20,
-                                    onPressed: () {
-                                      setState(() {
-                                        colorName = materialAndColor[
-                                                detailImage[index].imageId]
-                                            .colorName;
-                                      });
-                                    },
-                                    icon: Image.network(
-                                        'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
-                                            detailImage[1].productImageUrl,
-                                        fit: BoxFit.contain,
-                                        width: double.infinity)),
-                              ],
-                            );
-                          }),
-                    )
-                  ]),
                 )
               ],
               footer: Footer(
@@ -235,28 +415,55 @@ class _ProductDetailState extends State<ProductDetail> {
 
   List<Widget> _detailImage(List<ProductDetailImage> detailImageInfoList) {
     List<Widget> detailImageList = [];
-    detailImageInfoList.forEach((element) {
-      detailImageList.add(Container(
-        child: Image.network(
-            'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
-                element.productImageUrl,
-            fit: BoxFit.cover,
-            width: double.infinity),
+    for (var element in detailImageInfoList) {
+      detailImageList.add(Image.network(
+        'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+            element.productImageUrl,
+        height: 680,
+        fit: BoxFit.fill,
       ));
-    });
+    }
 
     return detailImageList;
+  }
+
+  List<Widget> _relatedProduct(List<ProductGet> relatedProduct) {
+    List<Widget> relatedProductList = [];
+    for (var element in relatedProduct) {
+      relatedProductList.add(SizedBox(
+        width: 150,
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.network(
+                'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/windows.png',
+                fit: BoxFit.contain,
+              ),
+              Text(element.productName),
+              Row(
+                children: _rate(),
+              ),
+              Text(element.productPrice + '원')
+            ],
+          ),
+        ),
+      ));
+    }
+    return relatedProductList;
   }
 
   Future<dynamic> _getProductDetail(productNumber) async {
     final detailImage = await _getProductDetailImages(productNumber);
     final materialAndColor = await _getProductMaterialAndColor(productNumber);
-    final product = await _getOneProductInfo(productNumber);
-
+    final product = await _getProduct(productNumber);
+    final relatedProduct = await _getRelatedProduct(productNumber);
     return {
       'detailImage': detailImage,
       'materialAndColor': materialAndColor,
-      'product': product
+      'product': product,
+      'relatedProduct': relatedProduct
     };
   }
 
@@ -281,16 +488,99 @@ class _ProductDetailState extends State<ProductDetail> {
     final response = await http.get(Uri.parse(
         'https://flyingstone.me/myapi/product/material/and/color?productNumber=' +
             productNumber));
-
-    List<ProductMaterialAndColor> productMaterialAndColorList = [];
+    List<ProductMaterialAndColor> productMaaterailAndColorList = [];
     if (response.statusCode == 200) {
       for (var item in json.decode(response.body)) {
-        productMaterialAndColorList.add(ProductMaterialAndColor.fromJson(item));
+        productMaaterailAndColorList
+            .add(ProductMaterialAndColor.fromJson(item));
       }
-      return productMaterialAndColorList;
+      return productMaaterailAndColorList;
     } else {
-      throw Exception("이미지를 등록해 주세요.");
+      throw Exception("색과 원재료를 등록해 주세요 ");
     }
+  }
+
+  Future<ProductGet> _getProduct(productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product?productNumber=' + productNumber));
+    if (response.statusCode == 200) {
+      ProductGet product = ProductGet.fromJson(json.decode(response.body));
+      return product;
+    } else {
+      throw Exception("상품을 등록해주세요");
+    }
+  }
+
+  Future<List<ProductGet>> _getRelatedProduct(productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product/related?productNumber=' +
+            productNumber));
+    List<ProductGet> relatedProductList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        relatedProductList.add(ProductGet.fromJson(item));
+      }
+      return relatedProductList;
+    } else {
+      throw Exception("상품을 등록해주세요");
+    }
+  }
+
+  List<Widget> _rate() {
+    return [
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Icon(
+        Icons.star,
+        size: 16,
+      ),
+      Text('25', style: GoogleFonts.roboto(fontSize: 16))
+    ];
+  }
+
+  List<Widget> _materialAndColor(
+      List<ProductMaterialAndColor> materialAndColor) {
+    List<Widget> materialAndColorWidgetList = [];
+    for (var item in materialAndColor) {
+      materialAndColorWidgetList.add(Container(
+        width: 54,
+        height: 54,
+        margin: EdgeInsets.only(top: 16, right: 10),
+        child: GestureDetector(
+          onTap: (() {
+            setState(() {
+              isSelected = item.colorName;
+            });
+          }),
+          child: Image.network(
+            'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/windows.png',
+            fit: BoxFit.cover,
+          ),
+        ),
+        decoration: BoxDecoration(
+            border: isSelected == item.colorName
+                ? Border.all(
+                    width: 2.0,
+                    color: Color(0xFF3A4432),
+                    style: BorderStyle.solid)
+                : Border.all(style: BorderStyle.none)),
+      ));
+    }
+    return materialAndColorWidgetList;
   }
 
   Future<ProductGet> _getOneProductInfo(String productNumber) async {

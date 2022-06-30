@@ -25,10 +25,9 @@ class _ProductListState extends State<ProductList> {
   Widget build(BuildContext context) {
     //추천이 많은 순서가 추천순
     //인기가 어떻게 많아야 인기순?
-    String categoryName = '';
 
-    return FutureBuilder<List<ProductGet>>(
-        future: _getAllProductInCategory(widget.arg),
+    return FutureBuilder(
+        future: _getCategoryDetail(widget.arg),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData == false) {
             return Scaffold(
@@ -42,7 +41,7 @@ class _ProductListState extends State<ProductList> {
                   centerTitle: true,
                   elevation: 0,
                   title: Text(
-                    categoryName,
+                    '',
                     style: GoogleFonts.taviraj(fontSize: 25),
                   ),
                   actions: [
@@ -86,7 +85,7 @@ class _ProductListState extends State<ProductList> {
                   centerTitle: true,
                   elevation: 0,
                   title: Text(
-                    categoryName,
+                    '',
                     style: GoogleFonts.taviraj(fontSize: 25),
                   ),
                   actions: [
@@ -123,7 +122,8 @@ class _ProductListState extends State<ProductList> {
                   ),
                 ));
           } else {
-            List<ProductGet> productData = snapshot.data;
+            List<ProductGet> productData = snapshot.data['productInCategory'];
+            CategoryGet category = snapshot.data['category'];
             return Scaffold(
                 appBar: AppBar(
                   leading: IconButton(
@@ -135,7 +135,7 @@ class _ProductListState extends State<ProductList> {
                   centerTitle: true,
                   elevation: 0,
                   title: Text(
-                    categoryName,
+                    category.categoryName,
                     style: GoogleFonts.taviraj(fontSize: 25),
                   ),
                   actions: [
@@ -249,6 +249,15 @@ class _ProductListState extends State<ProductList> {
     }
   }
 
+  Future<dynamic> _getCategoryDetail(categoryId) async {
+    final productInCategory = await _getAllProductInCategory(categoryId);
+    final category = await _getCategory(categoryId);
+    return {
+      'productInCategory': productInCategory,
+      'category': category,
+    };
+  }
+
   Future<List<ProductGet>> _getAllProductInCategory(categoryId) async {
     final response = await http.get(Uri.parse(
         'https://flyingstone.me/myapi/product/in/category?category-id=' +
@@ -264,6 +273,17 @@ class _ProductListState extends State<ProductList> {
       return productInCategoryList;
     } else {
       throw Exception("아직 상품이 준비되지 않았습니다.");
+    }
+  }
+
+  Future<CategoryGet> _getCategory(categoryId) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product/category/one?category-id=' +
+            categoryId));
+    if (response.statusCode == 200) {
+      return CategoryGet.fromJson(json.decode(response.body));
+    } else {
+      throw Exception("categoryId에 해당하는 카테고리가 없습니다.");
     }
   }
 }

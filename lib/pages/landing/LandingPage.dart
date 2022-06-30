@@ -76,10 +76,9 @@ class _LandingPageState extends State<LandingPage> with RouteAware {
   ];
 
   var heartIcon = Icon(Icons.favorite_outline);
+  int _current = 0;
   @override
   Widget build(BuildContext context) {
-    int _current = 0;
-
     return Scaffold(
         backgroundColor: Color(0xFFD6D6D6),
         appBar: AppBar(
@@ -168,8 +167,10 @@ class _LandingPageState extends State<LandingPage> with RouteAware {
                                             vertical: 8.0, horizontal: 4.0),
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Color(0xFF6B6B6B)),
                                             color:
-                                                Colors.black.withOpacity(0.9)),
+                                                Colors.black.withOpacity(0.0)),
                                       ));
                           }).toList(),
                         )
@@ -610,7 +611,7 @@ class _LandingPageState extends State<LandingPage> with RouteAware {
         ]),
         onTap: () async {
           int arg = categoryData.categoryId;
-          Modular.to.navigate('/productlist?category-id=' + arg.toString());
+          Modular.to.pushNamed('/productlist?category-id=' + arg.toString());
         });
   }
 
