@@ -33,6 +33,7 @@ class _ProductDetailState extends State<ProductDetail> {
   int _current = 0;
   List<bool> pressedButton = [false, true, true];
   int pressedButtonIndex = 0;
+  bool detailImageToggle = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,58 +108,60 @@ class _ProductDetailState extends State<ProductDetail> {
               children: [
                 Row(children: [
                   Expanded(
-                      flex: 6,
                       child: Stack(
-                        alignment: AlignmentDirectional.bottomCenter,
-                        children: [
-                          CarouselSlider(
-                            items: _detailImage(detailImage),
-                            options: CarouselOptions(
-                              height: 638,
-                              viewportFraction: 1,
-                              onPageChanged: (index, reason) {
-                                setState(() {
-                                  _current = index;
-                                });
-                              },
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: _detailImage(snapshot.data['detailImage'])
-                                .asMap()
-                                .entries
-                                .map((entry) {
-                              return GestureDetector(
-                                  onTap: () =>
-                                      controller.animateToPage(entry.key),
-                                  child: _current != entry.key
-                                      ? Container(
-                                          width: 6.0,
-                                          height: 6.0,
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 4.0),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.white
-                                                  .withOpacity(0.4)),
-                                        )
-                                      : Container(
-                                          width: 10.0,
-                                          height: 10.0,
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 4.0),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  color: Color(0xFF6B6B6B)),
-                                              color: Colors.black
-                                                  .withOpacity(0.0)),
-                                        ));
-                            }).toList(),
-                          )
-                        ],
-                      )),
+                    alignment: AlignmentDirectional.bottomCenter,
+                    children: [
+                      CarouselSlider(
+                        items: _detailImage(detailImage),
+                        options: CarouselOptions(
+                          height: 638,
+                          viewportFraction: 1,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _current = index;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: _detailImage(snapshot.data['detailImage'])
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                            return GestureDetector(
+                                onTap: () =>
+                                    controller.animateToPage(entry.key),
+                                child: _current != entry.key
+                                    ? Container(
+                                        width: 6.0,
+                                        height: 6.0,
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 8.0, horizontal: 4.0),
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color:
+                                                Colors.white.withOpacity(0.4)),
+                                      )
+                                    : Container(
+                                        width: 10.0,
+                                        height: 10.0,
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 8.0, horizontal: 4.0),
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Color(0xFF6B6B6B)),
+                                            color:
+                                                Colors.black.withOpacity(0.0)),
+                                      ));
+                          }).toList(),
+                        ),
+                      )
+                    ],
+                  )),
                 ]),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,17 +327,21 @@ class _ProductDetailState extends State<ProductDetail> {
                         ),
                       ),
                     ),
-                    Stack(
-                      children: [
-                        Positioned(
-                          child: Padding(
+                    SizedBox(
+                      height: detailImageToggle ? 900 : 1500,
+                      child: Column(
+                        children: [
+                          Padding(
                             padding: EdgeInsets.only(top: 45),
                             child: Container(
-                                decoration:
-                                    BoxDecoration(color: Color(0xFF384230)),
+                                decoration: BoxDecoration(
+                                    color: Color(0xFF384230),
+                                    border: Border.all(
+                                        width: 0, color: Color(0xFF384230))),
                                 width: double.infinity,
-                                height: 700,
+                                height: 150,
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -396,80 +403,141 @@ class _ProductDetailState extends State<ProductDetail> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      child: ClipRRect(
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(60),
-                                              topRight: Radius.circular(60)),
-                                          child: _content(pressedButtonIndex)),
-                                    ),
                                   ],
                                 )),
                           ),
-                        ),
-                      ],
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF384230),
+                                  border: Border.all(
+                                      width: 0, color: Color(0xFF384230))),
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(60),
+                                      topRight: Radius.circular(60)),
+                                  child: _content(pressedButtonIndex)),
+                            ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFAFAFA),
+                              boxShadow: detailImageToggle
+                                  ? [
+                                      BoxShadow(color: Colors.black),
+                                      BoxShadow(
+                                          offset: Offset(0, 7),
+                                          spreadRadius: 70,
+                                          color: Colors.white,
+                                          blurRadius: 50.0)
+                                    ]
+                                  : [],
+                            ),
+                            child: Center(
+                              child: Container(
+                                width: 160,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    color: Color(0xFF384230),
+                                    borderRadius: BorderRadius.circular(60),
+                                    border: Border.all(
+                                        color: Color(0xFF384230), width: 0)),
+                                child: GestureDetector(
+                                    child: Center(
+                                        child: Text("더보기",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontFamily: "NotoSansCJKkr",
+                                            ))),
+                                    onTap: () {
+                                      setState(() {
+                                        detailImageToggle = !detailImageToggle;
+                                      });
+                                    }),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFAFAFA),
+                            ),
+                            child: Column(
+                              children: [
+                                Text("상품정보"),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          top: BorderSide(
+                                              color: Color(0xFF384230),
+                                              style: BorderStyle.solid,
+                                              width: 1))),
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text("상품번호"),
+                                            Text("C358905521")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [Text("소재"), Text("아크릴")],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        )
+                                      ]),
+                                  margin: EdgeInsets.all(22),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 )
               ],
               footer: Footer(
                 padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border(top: BorderSide.none)),
-                      child: Column(
-                        children: [
-                          Text("상품정보"),
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    top: BorderSide(
-                                        color: Color(0xFF384230),
-                                        style: BorderStyle.solid,
-                                        width: 1))),
-                            child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("상품번호"),
-                                      Text("C358905521")
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [Text("소재"), Text("아크릴")],
-                                  ),
-                                  Row(
-                                    children: [Text("제조사"), Text("vinarc")],
-                                  ),
-                                  Row(
-                                    children: [Text("제조사"), Text("vinarc")],
-                                  ),
-                                  Row(
-                                    children: [Text("제조사"), Text("vinarc")],
-                                  ),
-                                  Row(
-                                    children: [Text("제조사"), Text("vinarc")],
-                                  ),
-                                  Row(
-                                    children: [Text("제조사"), Text("vinarc")],
-                                  ),
-                                  Row(
-                                    children: [Text("제조사"), Text("vinarc")],
-                                  )
-                                ]),
-                            margin: EdgeInsets.all(22),
-                          )
-                        ],
-                      ),
-                    ),
-                    FooterContent()
-                  ],
-                ),
+                child: FooterContent(),
                 backgroundColor: Color(0xFFc3c3c3),
               ),
             );
@@ -484,7 +552,7 @@ class _ProductDetailState extends State<ProductDetail> {
         'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
             element.productImageUrl,
         height: 680,
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
       ));
     }
 
@@ -495,15 +563,17 @@ class _ProductDetailState extends State<ProductDetail> {
     List<Widget> relatedProductList = [];
     for (var element in relatedProduct) {
       relatedProductList.add(SizedBox(
-        width: 150,
+        width: 200,
         child: Padding(
           padding: const EdgeInsets.only(right: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.network(
-                'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/windows.png',
-                fit: BoxFit.contain,
+                'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+                    element.productThumnailUrl,
+                height: 130,
+                fit: BoxFit.fill,
               ),
               Text(element.productName),
               Row(
@@ -631,7 +701,7 @@ class _ProductDetailState extends State<ProductDetail> {
             });
           }),
           child: Image.network(
-            'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/windows.png',
+            'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/sofa.png',
             fit: BoxFit.cover,
           ),
         ),
@@ -686,7 +756,7 @@ class _ProductDetailState extends State<ProductDetail> {
   Widget _content(pressedButtonIndex) {
     List<Widget> content = [
       Image.network(
-        'https://vinarc.s3.ap-northeast-2.amazonaws.com/detail/one.png',
+        'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/detailimage.png',
         width: double.infinity,
         fit: BoxFit.cover,
         alignment: Alignment.topCenter,
@@ -706,7 +776,7 @@ class _ProductDetailState extends State<ProductDetail> {
                       ClipRRect(
                           borderRadius: BorderRadius.circular(45),
                           child: Image.network(
-                              'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/windows.png',
+                              'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/sofa.png',
                               width: 132,
                               fit: BoxFit.fill)),
                       SizedBox(

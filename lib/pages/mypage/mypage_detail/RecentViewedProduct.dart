@@ -20,7 +20,7 @@ class RecentViewedProduct extends StatelessWidget {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset('assets/img/productlist/oneproduct.png',
+                        Image.asset('assets/img/productlist/chair.png',
                             width: MediaQuery.of(context).size.width / 2.3,
                             height: MediaQuery.of(context).size.width / 1.76,
                             fit: BoxFit.cover),
@@ -54,7 +54,7 @@ class RecentViewedProduct extends StatelessWidget {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset('assets/img/productlist/oneproduct.png',
+                        Image.asset('assets/img/productlist/chair.png',
                             width: MediaQuery.of(context).size.width / 2.3,
                             height: MediaQuery.of(context).size.width / 1.76,
                             fit: BoxFit.cover),
