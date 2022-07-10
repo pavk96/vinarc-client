@@ -103,442 +103,460 @@ class _ProductDetailState extends State<ProductDetail> {
                 snapshot.data['materialAndColor'];
             List<ProductGet> relatedProduct = snapshot.data['relatedProduct'];
             List<ProductDetailImage> detailImage = snapshot.data['detailImage'];
-            return FooterView(
-              flex: 9,
-              children: [
-                Row(children: [
-                  Expanded(
-                      child: Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
+            ScrollController _scrollController = ScrollController();
+            return NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                if (scrollNotification is ScrollStartNotification) {
+                  _startScrolled();
+                  print(scrollNotification.metrics.pixels);
+                  return true;
+                } else {
+                  return false;
+                }
+              },
+              child: FooterView(
+                flex: 9,
+                children: [
+                  Row(children: [
+                    Expanded(
+                        child: Stack(
+                      alignment: AlignmentDirectional.bottomCenter,
+                      children: [
+                        CarouselSlider(
+                          items: _detailImage(detailImage),
+                          options: CarouselOptions(
+                            height: 638,
+                            viewportFraction: 1,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _current = index;
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: _detailImage(snapshot.data['detailImage'])
+                                .asMap()
+                                .entries
+                                .map((entry) {
+                              return GestureDetector(
+                                  onTap: () =>
+                                      controller.animateToPage(entry.key),
+                                  child: _current != entry.key
+                                      ? Container(
+                                          width: 6.0,
+                                          height: 6.0,
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 8.0, horizontal: 4.0),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white
+                                                  .withOpacity(0.4)),
+                                        )
+                                      : Container(
+                                          width: 10.0,
+                                          height: 10.0,
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 8.0, horizontal: 4.0),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: Color(0xFF6B6B6B)),
+                                              color: Colors.black
+                                                  .withOpacity(0.0)),
+                                        ));
+                            }).toList(),
+                          ),
+                        )
+                      ],
+                    )),
+                  ]),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CarouselSlider(
-                        items: _detailImage(detailImage),
-                        options: CarouselOptions(
-                          height: 638,
-                          viewportFraction: 1,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          },
+                      Padding(
+                        padding: EdgeInsets.all(22.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(product.productName,
+                                  style: TextStyle(
+                                      color: Color(0xFF3a4432),
+                                      fontFamily: 'NotoSansCJKkr',
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w700)),
+                              Row(
+                                children: _rate(),
+                              ),
+                              Text(product.productPrice + '원',
+                                  style: TextStyle(
+                                      color: Color(0xFF3a4432),
+                                      fontFamily: 'NotoSansCJKkr',
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700))
+                            ]),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.all(22.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('색상',
+                                        style: TextStyle(
+                                            color: Color(0xFF3a4432),
+                                            fontFamily: 'NotoSansCJKkr',
+                                            fontSize: 18)),
+                                    Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(isSelected,
+                                            style: TextStyle(
+                                                color: Color(0xFF3a4432),
+                                                fontSize: 14,
+                                                fontFamily: 'NotoSansCJKkr')))
+                                  ]),
+                              Row(children: _materialAndColor(materialAndColor))
+                            ],
+                          )),
+                      Padding(
+                        padding: EdgeInsets.all(22.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        //-버튼 물건 수량
+                                        setState(() {
+                                          productCount = productCount - 1;
+                                        });
+                                      },
+                                      icon: Icon(Icons.remove)),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(left: 10, right: 10),
+                                    child: Text(
+                                      productCount.toString(),
+                                      style: TextStyle(
+                                        color: Color(0xFF384230),
+                                        fontSize: 24,
+                                        fontFamily: "NotoSansCJKkr",
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        //+버튼 물건 수량
+                                        setState(() {
+                                          productCount = productCount + 1;
+                                        });
+                                      },
+                                      icon: Icon(Icons.add))
+                                ],
+                              ),
+                              SizedBox(
+                                width: 180,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text("총 상품금액"),
+                                    Text(
+                                        (int.parse(product.productPrice) *
+                                                    productCount)
+                                                .toString() +
+                                            '원',
+                                        style: GoogleFonts.roboto(
+                                            color: Color(0xFF3A4432),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 24))
+                                  ],
+                                ),
+                              )
+                            ]),
+                      ),
+                      Container(
+                          width: double.infinity,
+                          child: Divider(
+                              color: Color(0xFFD6D6D6), thickness: 1.0)),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            GestureDetector(
+                              onTap: () {},
+                              child: Container(
+                                width: 342,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  color: Color(0xFF384230),
+                                ),
+                                child: Text("BUY NOW",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        height: 2,
+                                        color: Colors.white,
+                                        fontFamily: 'NotoSansCJKkr',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18)),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.shopping_cart,
+                                size: 26,
+                                color: Color(0xFF384230),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 30),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 250,
+                          child: CarouselSlider(
+                            items: _relatedProduct(relatedProduct),
+                            options: CarouselOptions(
+                              viewportFraction: 0.3,
+                              enableInfiniteScroll: false,
+                              initialPage: 1,
+                              disableCenter: false,
+                            ),
+                            carouselController: relatedProductController,
+                          ),
                         ),
                       ),
                       SizedBox(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: _detailImage(snapshot.data['detailImage'])
-                              .asMap()
-                              .entries
-                              .map((entry) {
-                            return GestureDetector(
-                                onTap: () =>
-                                    controller.animateToPage(entry.key),
-                                child: _current != entry.key
-                                    ? Container(
-                                        width: 6.0,
-                                        height: 6.0,
-                                        margin: EdgeInsets.symmetric(
-                                            vertical: 8.0, horizontal: 4.0),
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color:
-                                                Colors.white.withOpacity(0.4)),
-                                      )
-                                    : Container(
-                                        width: 10.0,
-                                        height: 10.0,
-                                        margin: EdgeInsets.symmetric(
-                                            vertical: 8.0, horizontal: 4.0),
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                color: Color(0xFF6B6B6B)),
-                                            color:
-                                                Colors.black.withOpacity(0.0)),
-                                      ));
-                          }).toList(),
-                        ),
-                      )
-                    ],
-                  )),
-                ]),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(22.0),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(product.productName,
-                                style: TextStyle(
-                                    color: Color(0xFF3a4432),
-                                    fontFamily: 'NotoSansCJKkr',
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w700)),
-                            Row(
-                              children: _rate(),
-                            ),
-                            Text(product.productPrice + '원',
-                                style: TextStyle(
-                                    color: Color(0xFF3a4432),
-                                    fontFamily: 'NotoSansCJKkr',
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w700))
-                          ]),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.all(22.0),
+                        height: detailImageToggle ? 900 : 1500,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text('색상',
-                                      style: TextStyle(
-                                          color: Color(0xFF3a4432),
-                                          fontFamily: 'NotoSansCJKkr',
-                                          fontSize: 18)),
-                                  Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text(isSelected,
-                                          style: TextStyle(
-                                              color: Color(0xFF3a4432),
-                                              fontSize: 14,
-                                              fontFamily: 'NotoSansCJKkr')))
-                                ]),
-                            Row(children: _materialAndColor(materialAndColor))
-                          ],
-                        )),
-                    Padding(
-                      padding: EdgeInsets.all(22.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      //-버튼 물건 수량
-                                      setState(() {
-                                        productCount = productCount - 1;
-                                      });
-                                    },
-                                    icon: Icon(Icons.remove)),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10, right: 10),
-                                  child: Text(
-                                    productCount.toString(),
-                                    style: TextStyle(
+                            Padding(
+                              padding: EdgeInsets.only(top: 45),
+                              child: Container(
+                                  decoration: BoxDecoration(
                                       color: Color(0xFF384230),
-                                      fontSize: 24,
-                                      fontFamily: "NotoSansCJKkr",
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                    onPressed: () {
-                                      //+버튼 물건 수량
-                                      setState(() {
-                                        productCount = productCount + 1;
-                                      });
-                                    },
-                                    icon: Icon(Icons.add))
-                              ],
+                                      border: Border.all(
+                                          width: 0, color: Color(0xFF384230))),
+                                  width: double.infinity,
+                                  height: 150,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 44, bottom: 30.0),
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.735,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(60),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black,
+                                                  blurRadius: 10,
+                                                )
+                                              ]),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              _detailButton(
+                                                  '상세설명',
+                                                  BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              bottomLeft: Radius
+                                                                  .circular(60),
+                                                              topLeft: Radius
+                                                                  .circular(
+                                                                      60)),
+                                                      color: pressedButton[0]
+                                                          ? Color(0xFF384230)
+                                                          : Color(0xFF1C2714)),
+                                                  0),
+                                              _detailButton(
+                                                  '구매후기',
+                                                  BoxDecoration(
+                                                      color: pressedButton[1]
+                                                          ? Color(0xFF384230)
+                                                          : Color(0xFF1C2714)),
+                                                  1),
+                                              _detailButton(
+                                                  'Q&A',
+                                                  BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          60),
+                                                              topRight: Radius
+                                                                  .circular(
+                                                                      60)),
+                                                      color: pressedButton[2]
+                                                          ? Color(0xFF384230)
+                                                          : Color(0xFF1C2714)),
+                                                  2),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )),
                             ),
-                            SizedBox(
-                              width: 180,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text("총 상품금액"),
-                                  Text(
-                                      (int.parse(product.productPrice) *
-                                                  productCount)
-                                              .toString() +
-                                          '원',
-                                      style: GoogleFonts.roboto(
-                                          color: Color(0xFF3A4432),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 24))
-                                ],
-                              ),
-                            )
-                          ]),
-                    ),
-                    Container(
-                        width: double.infinity,
-                        child:
-                            Divider(color: Color(0xFFD6D6D6), thickness: 1.0)),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              width: 342,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(22),
-                                color: Color(0xFF384230),
-                              ),
-                              child: Text("BUY NOW",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      height: 2,
-                                      color: Colors.white,
-                                      fontFamily: 'NotoSansCJKkr',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.shopping_cart,
-                              size: 26,
-                              color: Color(0xFF384230),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 30),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 250,
-                        child: CarouselSlider(
-                          items: _relatedProduct(relatedProduct),
-                          options: CarouselOptions(
-                            viewportFraction: 0.3,
-                            enableInfiniteScroll: false,
-                            initialPage: 1,
-                            disableCenter: false,
-                          ),
-                          carouselController: relatedProductController,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: detailImageToggle ? 900 : 1500,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 45),
-                            child: Container(
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
                                 decoration: BoxDecoration(
                                     color: Color(0xFF384230),
                                     border: Border.all(
                                         width: 0, color: Color(0xFF384230))),
-                                width: double.infinity,
-                                height: 150,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 44, bottom: 30.0),
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.735,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(60),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black,
-                                                blurRadius: 10,
-                                              )
-                                            ]),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            _detailButton(
-                                                '상세설명',
-                                                BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                            bottomLeft: Radius
-                                                                .circular(60),
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    60)),
-                                                    color: pressedButton[0]
-                                                        ? Color(0xFF384230)
-                                                        : Color(0xFF1C2714)),
-                                                0),
-                                            _detailButton(
-                                                '구매후기',
-                                                BoxDecoration(
-                                                    color: pressedButton[1]
-                                                        ? Color(0xFF384230)
-                                                        : Color(0xFF1C2714)),
-                                                1),
-                                            _detailButton(
-                                                'Q&A',
-                                                BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                            bottomRight: Radius
-                                                                .circular(60),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    60)),
-                                                    color: pressedButton[2]
-                                                        ? Color(0xFF384230)
-                                                        : Color(0xFF1C2714)),
-                                                2),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                          ),
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                  color: Color(0xFF384230),
-                                  border: Border.all(
-                                      width: 0, color: Color(0xFF384230))),
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(60),
-                                      topRight: Radius.circular(60)),
-                                  child: _content(pressedButtonIndex)),
-                            ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFFAFAFA),
-                              boxShadow: detailImageToggle
-                                  ? [
-                                      BoxShadow(color: Colors.black),
-                                      BoxShadow(
-                                          offset: Offset(0, 7),
-                                          spreadRadius: 70,
-                                          color: Colors.white,
-                                          blurRadius: 50.0)
-                                    ]
-                                  : [],
-                            ),
-                            child: Center(
-                              child: Container(
-                                width: 160,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    color: Color(0xFF384230),
-                                    borderRadius: BorderRadius.circular(60),
-                                    border: Border.all(
-                                        color: Color(0xFF384230), width: 0)),
-                                child: GestureDetector(
-                                    child: Center(
-                                        child: Text("더보기",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                              fontFamily: "NotoSansCJKkr",
-                                            ))),
-                                    onTap: () {
-                                      setState(() {
-                                        detailImageToggle = !detailImageToggle;
-                                      });
-                                    }),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(60),
+                                        topRight: Radius.circular(60)),
+                                    child: _content(pressedButtonIndex)),
                               ),
                             ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFFFAFAFA),
-                            ),
-                            child: Column(
-                              children: [
-                                Text("상품정보"),
-                                Container(
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFFAFAFA),
+                                boxShadow: detailImageToggle
+                                    ? [
+                                        BoxShadow(color: Colors.black),
+                                        BoxShadow(
+                                            offset: Offset(0, 7),
+                                            spreadRadius: 70,
+                                            color: Colors.white,
+                                            blurRadius: 50.0)
+                                      ]
+                                    : [],
+                              ),
+                              child: Center(
+                                child: Container(
+                                  width: 160,
+                                  height: 50,
                                   decoration: BoxDecoration(
-                                      border: Border(
-                                          top: BorderSide(
-                                              color: Color(0xFF384230),
-                                              style: BorderStyle.solid,
-                                              width: 1))),
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text("상품번호"),
-                                            Text("C358905521")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [Text("소재"), Text("아크릴")],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        )
-                                      ]),
-                                  margin: EdgeInsets.all(22),
-                                )
-                              ],
+                                      color: Color(0xFF384230),
+                                      borderRadius: BorderRadius.circular(60),
+                                      border: Border.all(
+                                          color: Color(0xFF384230), width: 0)),
+                                  child: GestureDetector(
+                                      child: Center(
+                                          child: Text("더보기",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                                fontFamily: "NotoSansCJKkr",
+                                              ))),
+                                      onTap: () {
+                                        setState(() {
+                                          detailImageToggle =
+                                              !detailImageToggle;
+                                        });
+                                      }),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )
-              ],
-              footer: Footer(
-                padding: EdgeInsets.zero,
-                child: FooterContent(),
-                backgroundColor: Color(0xFFc3c3c3),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFFAFAFA),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text("상품정보"),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            top: BorderSide(
+                                                color: Color(0xFF384230),
+                                                style: BorderStyle.solid,
+                                                width: 1))),
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text("상품번호"),
+                                              Text("C358905521")
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [Text("소재"), Text("아크릴")],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("제조사"),
+                                              Text("vinarc")
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("제조사"),
+                                              Text("vinarc")
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("제조사"),
+                                              Text("vinarc")
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("제조사"),
+                                              Text("vinarc")
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("제조사"),
+                                              Text("vinarc")
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("제조사"),
+                                              Text("vinarc")
+                                            ],
+                                          )
+                                        ]),
+                                    margin: EdgeInsets.all(22),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+                ],
+                footer: Footer(
+                  padding: EdgeInsets.zero,
+                  child: FooterContent(),
+                  backgroundColor: Color(0xFFc3c3c3),
+                ),
               ),
             );
           }),
@@ -889,5 +907,9 @@ class _ProductDetailState extends State<ProductDetail> {
               ))),
     ];
     return content[pressedButtonIndex];
+  }
+
+  void _startScrolled() {
+    print("scroll Start");
   }
 }
