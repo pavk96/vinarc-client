@@ -34,6 +34,9 @@ class _ProductDetailState extends State<ProductDetail> {
   List<bool> pressedButton = [false, true, true];
   int pressedButtonIndex = 0;
   bool detailImageToggle = true;
+  bool isScrollDown = false;
+
+  GlobalKey key = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,12 +106,19 @@ class _ProductDetailState extends State<ProductDetail> {
                 snapshot.data['materialAndColor'];
             List<ProductGet> relatedProduct = snapshot.data['relatedProduct'];
             List<ProductDetailImage> detailImage = snapshot.data['detailImage'];
-            ScrollController _scrollController = ScrollController();
             return NotificationListener<ScrollNotification>(
               onNotification: (scrollNotification) {
-                if (scrollNotification is ScrollStartNotification) {
+                RenderBox box =
+                    key.currentContext!.findRenderObject() as RenderBox;
+                Offset position = box.localToGlobal(Offset.zero);
+                double y = position.dy;
+                if (scrollNotification is ScrollStartNotification && y < 0) {
+                  //not static but container's offset top
+                  //Y는 Globalkey로부터 생성된 Offset이고 이걸 기준으로 0점을 만들고 그 아래로 내려가면 네브바가 안보이게 된다.
+                  //이때부터 고정시켜주면 된다.
                   _startScrolled();
                   print(scrollNotification.metrics.pixels);
+                  print(y);
                   return true;
                 } else {
                   return false;
@@ -170,7 +180,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                         ));
                             }).toList(),
                           ),
-                        )
+                        ),
                       ],
                     )),
                   ]),
@@ -340,214 +350,234 @@ class _ProductDetailState extends State<ProductDetail> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: detailImageToggle ? 900 : 1500,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 45),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Color(0xFF384230),
-                                      border: Border.all(
-                                          width: 0, color: Color(0xFF384230))),
-                                  width: double.infinity,
-                                  height: 150,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 44, bottom: 30.0),
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.735,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(60),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black,
-                                                  blurRadius: 10,
-                                                )
-                                              ]),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              _detailButton(
-                                                  '상세설명',
-                                                  BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                              bottomLeft: Radius
-                                                                  .circular(60),
-                                                              topLeft: Radius
-                                                                  .circular(
-                                                                      60)),
-                                                      color: pressedButton[0]
-                                                          ? Color(0xFF384230)
-                                                          : Color(0xFF1C2714)),
-                                                  0),
-                                              _detailButton(
-                                                  '구매후기',
-                                                  BoxDecoration(
-                                                      color: pressedButton[1]
-                                                          ? Color(0xFF384230)
-                                                          : Color(0xFF1C2714)),
-                                                  1),
-                                              _detailButton(
-                                                  'Q&A',
-                                                  BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                              bottomRight:
-                                                                  Radius
-                                                                      .circular(
-                                                                          60),
-                                                              topRight: Radius
-                                                                  .circular(
-                                                                      60)),
-                                                      color: pressedButton[2]
-                                                          ? Color(0xFF384230)
-                                                          : Color(0xFF1C2714)),
-                                                  2),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                            Expanded(
-                              child: Container(
-                                width: double.infinity,
+                      Stack(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 45),
+                            child: Container(
                                 decoration: BoxDecoration(
                                     color: Color(0xFF384230),
                                     border: Border.all(
                                         width: 0, color: Color(0xFF384230))),
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(60),
-                                        topRight: Radius.circular(60)),
-                                    child: _content(pressedButtonIndex)),
-                              ),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Color(0xFFFAFAFA),
-                                boxShadow: detailImageToggle
-                                    ? [
-                                        BoxShadow(color: Colors.black),
-                                        BoxShadow(
-                                            offset: Offset(0, 7),
-                                            spreadRadius: 70,
-                                            color: Colors.white,
-                                            blurRadius: 50.0)
-                                      ]
-                                    : [],
-                              ),
-                              child: Center(
-                                child: Container(
-                                  width: 160,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                      color: Color(0xFF384230),
-                                      borderRadius: BorderRadius.circular(60),
-                                      border: Border.all(
-                                          color: Color(0xFF384230), width: 0)),
-                                  child: GestureDetector(
-                                      child: Center(
-                                          child: Text("더보기",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18,
-                                                fontFamily: "NotoSansCJKkr",
-                                              ))),
-                                      onTap: () {
-                                        setState(() {
-                                          detailImageToggle =
-                                              !detailImageToggle;
-                                        });
-                                      }),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xFFFAFAFA),
-                              ),
-                              child: Column(
-                                children: [
-                                  Text("상품정보"),
-                                  Container(
+                                width: double.infinity,
+                                height: 150,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      key: key,
+                                      padding: const EdgeInsets.only(
+                                          top: 44, bottom: 30.0),
+                                      child: isScrollDown
+                                          ? Positioned(
+                                              bottom: 0,
+                                              child:
+                                                  Container(child: Text("HI")))
+                                          : Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.735,
+                                              height: 60,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black,
+                                                      blurRadius: 10,
+                                                    )
+                                                  ]),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  _detailButton(
+                                                      '상세설명',
+                                                      BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  bottomLeft: Radius
+                                                                      .circular(
+                                                                          60),
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          60)),
+                                                          color: pressedButton[
+                                                                  0]
+                                                              ? Color(
+                                                                  0xFF384230)
+                                                              : Color(
+                                                                  0xFF1C2714)),
+                                                      0),
+                                                  _detailButton(
+                                                      '구매후기',
+                                                      BoxDecoration(
+                                                          color: pressedButton[
+                                                                  1]
+                                                              ? Color(
+                                                                  0xFF384230)
+                                                              : Color(
+                                                                  0xFF1C2714)),
+                                                      1),
+                                                  _detailButton(
+                                                      'Q&A',
+                                                      BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  bottomRight: Radius
+                                                                      .circular(
+                                                                          60),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          60)),
+                                                          color: pressedButton[
+                                                                  2]
+                                                              ? Color(
+                                                                  0xFF384230)
+                                                              : Color(
+                                                                  0xFF1C2714)),
+                                                      2),
+                                                ],
+                                              ),
+                                            ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          SizedBox(
+                            height: 1500,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
                                     decoration: BoxDecoration(
-                                        border: Border(
-                                            top: BorderSide(
-                                                color: Color(0xFF384230),
-                                                style: BorderStyle.solid,
-                                                width: 1))),
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text("상품번호"),
-                                              Text("C358905521")
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [Text("소재"), Text("아크릴")],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text("제조사"),
-                                              Text("vinarc")
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text("제조사"),
-                                              Text("vinarc")
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text("제조사"),
-                                              Text("vinarc")
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text("제조사"),
-                                              Text("vinarc")
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text("제조사"),
-                                              Text("vinarc")
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text("제조사"),
-                                              Text("vinarc")
-                                            ],
-                                          )
-                                        ]),
-                                    margin: EdgeInsets.all(22),
-                                  )
-                                ],
+                                        color: Color(0xFF384230),
+                                        border: Border.all(
+                                            width: 0,
+                                            color: Color(0xFF384230))),
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(60),
+                                            topRight: Radius.circular(60)),
+                                        child: _content(pressedButtonIndex)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFAFAFA),
+                              boxShadow: detailImageToggle
+                                  ? [
+                                      BoxShadow(color: Colors.black),
+                                      BoxShadow(
+                                          offset: Offset(0, 7),
+                                          spreadRadius: 70,
+                                          color: Colors.white,
+                                          blurRadius: 50.0)
+                                    ]
+                                  : [],
+                            ),
+                            child: Center(
+                              child: Container(
+                                width: 160,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    color: Color(0xFF384230),
+                                    borderRadius: BorderRadius.circular(60),
+                                    border: Border.all(
+                                        color: Color(0xFF384230), width: 0)),
+                                child: GestureDetector(
+                                    child: Center(
+                                        child: Text("더보기",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontFamily: "NotoSansCJKkr",
+                                            ))),
+                                    onTap: () {
+                                      setState(() {
+                                        detailImageToggle = !detailImageToggle;
+                                      });
+                                    }),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFAFAFA),
+                            ),
+                            child: Column(
+                              children: [
+                                Text("상품정보"),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          top: BorderSide(
+                                              color: Color(0xFF384230),
+                                              style: BorderStyle.solid,
+                                              width: 1))),
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text("상품번호"),
+                                            Text("C358905521")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [Text("소재"), Text("아크릴")],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text("제조사"),
+                                            Text("vinarc")
+                                          ],
+                                        )
+                                      ]),
+                                  margin: EdgeInsets.all(22),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                       )
                     ],
                   )
@@ -910,6 +940,9 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   void _startScrolled() {
-    print("scroll Start");
+    //여기서는 true false만 나눠주기
+    setState(() {
+      pressedButton[1] = false;
+    });
   }
 }
