@@ -15,6 +15,7 @@ import 'package:vinarc/post/ProductGet.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:vinarc/post/ProductMaterialAndColorGet.dart';
+import 'package:vinarc/post/ProductQnaGet.dart';
 import 'package:vinarc/post/ProductReviewGet.dart';
 import '../layout/Footer.dart';
 
@@ -143,6 +144,9 @@ class _ProductDetailState extends State<ProductDetail> {
             }
             ProductGet product = snapshot.data['product'];
             ProductDetailGet productDetail = snapshot.data['productDetail'];
+            List<ProductReviewGet> productReview =
+                snapshot.data['productReview'];
+            List<ProductQnaGet> productQna = snapshot.data['productQna'];
             List<ProductMaterialAndColor> materialAndColor =
                 snapshot.data['materialAndColor'];
             List<ProductGet> relatedProduct = snapshot.data['relatedProduct'];
@@ -245,7 +249,13 @@ class _ProductDetailState extends State<ProductDetail> {
                               Row(
                                 children: _rate(),
                               ),
-                              Text(product.productPrice + '원',
+                              Text(
+                                  product.productPrice.substring(
+                                          0, product.productPrice.length - 3) +
+                                      ',' +
+                                      product.productPrice.substring(
+                                          product.productPrice.length - 3) +
+                                      '원',
                                   style: TextStyle(
                                       color: Color(0xFF3a4432),
                                       fontFamily: 'NotoSansCJKkr',
@@ -282,53 +292,58 @@ class _ProductDetailState extends State<ProductDetail> {
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  IconButton(
-                                      onPressed: () {
-                                        //-버튼 물건 수량
-                                        setState(() {
-                                          productCount = productCount - 1;
-                                        });
-                                      },
-                                      icon: Icon(Icons.remove)),
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 10, right: 10),
-                                    child: Text(
-                                      productCount.toString(),
-                                      style: TextStyle(
-                                        color: Color(0xFF384230),
-                                        fontSize: 24,
-                                        fontFamily: "NotoSansCJKkr",
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                      onPressed: () {
-                                        //+버튼 물건 수량
-                                        setState(() {
-                                          productCount = productCount + 1;
-                                        });
-                                      },
-                                      icon: Icon(Icons.add))
-                                ],
-                              ),
-                              SizedBox(
-                                width: 180,
+                              Expanded(
+                                flex: 1,
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          //-버튼 물건 수량
+                                          setState(() {
+                                            productCount = productCount - 1;
+                                          });
+                                        },
+                                        icon: Icon(Icons.remove)),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(left: 10, right: 10),
+                                      child: Text(
+                                        productCount.toString(),
+                                        style: TextStyle(
+                                          color: Color(0xFF384230),
+                                          fontSize: 24,
+                                          fontFamily: "NotoSansCJKkr",
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          //+버튼 물건 수량
+                                          setState(() {
+                                            productCount = productCount + 1;
+                                          });
+                                        },
+                                        icon: Icon(Icons.add))
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text("총 상품금액"),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 20),
+                                    ),
                                     Text(
-                                        (int.parse(product.productPrice) *
+                                        _setPriceString(
+                                            (int.parse(product.productPrice) *
                                                     productCount)
-                                                .toString() +
-                                            '원',
+                                                .toString()),
                                         style: GoogleFonts.roboto(
                                             color: Color(0xFF3A4432),
                                             fontWeight: FontWeight.bold,
@@ -348,7 +363,9 @@ class _ProductDetailState extends State<ProductDetail> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                //TODO 로그인 확인, Bootpay연결
+                              },
                               child: Container(
                                 width: 342,
                                 height: 44,
@@ -367,7 +384,9 @@ class _ProductDetailState extends State<ProductDetail> {
                               ),
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                //TODO 장바구니에 넣고 장바구니에 넣었습니다.알림
+                              },
                               icon: Icon(
                                 Icons.shopping_cart,
                                 size: 26,
@@ -510,8 +529,10 @@ class _ProductDetailState extends State<ProductDetail> {
                                                   topLeft: Radius.circular(60),
                                                   topRight:
                                                       Radius.circular(60)),
-                                              child:
-                                                  _content(pressedButtonIndex)),
+                                              child: _content(
+                                                  pressedButtonIndex,
+                                                  productReview,
+                                                  productQna)),
                                         ),
                                       ),
                                     ],
@@ -677,7 +698,7 @@ class _ProductDetailState extends State<ProductDetail> {
               Row(
                 children: _rate(),
               ),
-              Text(element.productPrice + '원')
+              Text(_setPriceString(element.productPrice))
             ],
           ),
         ),
@@ -693,13 +714,15 @@ class _ProductDetailState extends State<ProductDetail> {
     final relatedProduct = await _getRelatedProduct(productNumber);
     final productDetail = await _getProductDetail(productNumber);
     final productReview = await _getProductReview(productNumber);
+    final productQna = await _getProductQna(productNumber);
     return {
       'detailImage': detailImage,
       'materialAndColor': materialAndColor,
       'product': product,
       'productDetail': productDetail,
       'relatedProduct': relatedProduct,
-      'productReview': productReview
+      'productReview': productReview,
+      'productQna': productQna
     };
   }
 
@@ -771,6 +794,22 @@ class _ProductDetailState extends State<ProductDetail> {
         productReviewList.add(ProductReviewGet.fromJson(item));
       }
       return productReviewList;
+    } else {
+      throw Exception("리뷰가 없습니다.");
+    }
+  }
+
+  Future<List<ProductQnaGet>> _getProductQna(productNumber) async {
+    //사용자 정보가 확실히 있지만 보낼 때는 상품번호만 보내기 때문에 크게 상관없다
+    final response = await http.get(Uri.parse(
+        "https://flyingstone.me/myapi/product/qna?productNumber=" +
+            productNumber));
+    List<ProductQnaGet> productQnaList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        productQnaList.add(ProductQnaGet.fromJson(item));
+      }
+      return productQnaList;
     } else {
       throw Exception("리뷰가 없습니다.");
     }
@@ -886,7 +925,8 @@ class _ProductDetailState extends State<ProductDetail> {
     );
   }
 
-  Widget _content(pressedButtonIndex) {
+  Widget _content(pressedButtonIndex, List<ProductReviewGet> productReview,
+      List<ProductQnaGet> productQna) {
     List<Widget> content = [
       Image.network(
         'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/detailimage.png',
@@ -899,127 +939,151 @@ class _ProductDetailState extends State<ProductDetail> {
           width: double.infinity,
           height: 500,
           padding: EdgeInsets.only(top: 22),
-          child: Padding(
-              padding: EdgeInsets.all(22),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: ListView.builder(
+            itemCount: productReview.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                  padding: EdgeInsets.all(22),
+                  child: Column(
                     children: [
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(45),
-                          child: Image.network(
-                              'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/sofa.png',
-                              width: 132,
-                              fit: BoxFit.fill)),
-                      SizedBox(
-                        width: 230,
-                        height: 120,
-                        child: Column(
-                          children: [
-                            Column(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(45),
+                              child: Image.network(
+                                  'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+                                      productReview[index].reviewImageUrl,
+                                  width: 132,
+                                  fit: BoxFit.fill)),
+                          SizedBox(
+                            width: 230,
+                            height: 120,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text("1t****"),
-                                    Text("2022.02.16")
+                                    Text(productReview[index]
+                                        .userId
+                                        .replaceRange(2, null, '***')),
+                                    Text(productReview[index].reviewDate)
                                   ],
                                 ),
                                 Row(
                                   children: [..._rate()],
                                 ),
-                                Text("아이보리/아크릴"),
+                                Text(
+                                    "아이보리/아크릴 "), //TODO 나중에 Ordered Product에서 무슨 색이랑 그런 거 적어야함
+
+                                Text(productReview[index].reviewContents)
                               ],
                             ),
-                            Text(
-                                "Products quality is best. They give the same product as they promise.")
-                          ],
-                        ),
+                          )
+                        ],
                       )
                     ],
-                  )
-                ],
-              ))),
+                  ));
+            },
+          )),
       Container(
           color: Colors.white,
           width: double.infinity,
           height: 500,
           padding: EdgeInsets.only(top: 22),
-          child: Padding(
-              padding: EdgeInsets.all(22),
-              child: Column(
-                children: [
-                  Container(
-                    width: 384,
-                    height: 171,
+          child: ListView.builder(
+              itemCount: productQna.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                    padding: EdgeInsets.all(22),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Container(
-                          height: 82,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Color(0xFFFAFAFA)),
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 5, color: Color(0x15000000))
-                              ],
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(40),
-                                  topRight: Radius.circular(40))),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          width: 384,
+                          height: 171,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Image.network(
-                                  'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/q.png'),
-                              Padding(padding: EdgeInsets.only(right: 20)),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("1t********"),
-                                  Text("재질은 어떻게 선택할 수 있나요?")
-                                ],
+                              Container(
+                                height: 82,
+                                padding: EdgeInsets.only(left: 50),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border:
+                                        Border.all(color: Color(0xFFFAFAFA)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          blurRadius: 5,
+                                          color: Color(0x15000000))
+                                    ],
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(40),
+                                        topRight: Radius.circular(40))),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Image.network(
+                                        'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/q.png'),
+                                    Padding(
+                                        padding: EdgeInsets.only(right: 20)),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(productQna[index]
+                                            .userId
+                                            .replaceRange(2, null, '***')),
+                                        Text(productQna[index].qnaContents)
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(left: 50),
+                                height: 82,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border:
+                                        Border.all(color: Color(0xFFFAFAFA)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          blurRadius: 5,
+                                          color: Color(0x15000000))
+                                    ],
+                                    borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(40),
+                                        bottomRight: Radius.circular(40))),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Image.network(
+                                        'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/a.png'),
+                                    Padding(
+                                        padding: EdgeInsets.only(right: 20)),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Vinarc"),
+                                        Text(productQna[index].qnaAnswer)
+                                      ],
+                                    )
+                                  ],
+                                ),
                               )
                             ],
                           ),
                         ),
-                        Container(
-                          height: 82,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Color(0xFFFAFAFA)),
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 5, color: Color(0x15000000))
-                              ],
-                              borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(40),
-                                  bottomRight: Radius.circular(40))),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.network(
-                                  'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/a.png'),
-                              Padding(padding: EdgeInsets.only(right: 20)),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Vinarc"),
-                                  Text("어떻게든 선택할 수 있습니다.")
-                                ],
-                              )
-                            ],
-                          ),
-                        )
                       ],
-                    ),
-                  ),
-                ],
-              ))),
+                    ));
+              })),
     ];
     return content[pressedButtonIndex];
   }
@@ -1043,5 +1107,15 @@ class _ProductDetailState extends State<ProductDetail> {
         ],
       ),
     );
+  }
+
+  String _setPriceString(String productPrice) {
+    if (productPrice.length < 3) {
+      return productPrice + ' 원';
+    }
+    return productPrice.substring(0, productPrice.length - 3) +
+        ',' +
+        productPrice.substring(productPrice.length - 3) +
+        '원';
   }
 }
