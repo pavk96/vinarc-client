@@ -9,11 +9,13 @@ import 'package:footer/footer_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:vinarc/main.dart';
+import 'package:vinarc/post/ProductDetailGet.dart';
 import 'package:vinarc/post/ProductDetailImageGet.dart';
 import 'package:vinarc/post/ProductGet.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:vinarc/post/ProductMaterialAndColorGet.dart';
+import 'package:vinarc/post/ProductReviewGet.dart';
 import '../layout/Footer.dart';
 
 class ProductDetail extends StatefulWidget {
@@ -44,6 +46,7 @@ class _ProductDetailState extends State<ProductDetail> {
           ? AppBar(
               centerTitle: true,
               backgroundColor: Color(0xFF384230),
+              automaticallyImplyLeading: false,
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -123,7 +126,7 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
       extendBodyBehindAppBar: true,
       body: FutureBuilder(
-          future: _getProductDetail(widget.arg),
+          future: _getProductInfo(widget.arg),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData == false) {
               return Center(
@@ -139,6 +142,7 @@ class _ProductDetailState extends State<ProductDetail> {
               );
             }
             ProductGet product = snapshot.data['product'];
+            ProductDetailGet productDetail = snapshot.data['productDetail'];
             List<ProductMaterialAndColor> materialAndColor =
                 snapshot.data['materialAndColor'];
             List<ProductGet> relatedProduct = snapshot.data['relatedProduct'];
@@ -514,9 +518,9 @@ class _ProductDetailState extends State<ProductDetail> {
                                   ),
                                 ),
                                 Container(
+                                  padding: EdgeInsets.only(top: 12, bottom: 12),
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: Color(0xFFFAFAFA),
                                     boxShadow: detailImageToggle
                                         ? [
                                             BoxShadow(color: Colors.black),
@@ -533,6 +537,11 @@ class _ProductDetailState extends State<ProductDetail> {
                                       width: 160,
                                       height: 50,
                                       decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                                offset: Offset(0, 3),
+                                                blurRadius: 5)
+                                          ],
                                           color: Color(0xFF384230),
                                           borderRadius:
                                               BorderRadius.circular(60),
@@ -556,63 +565,62 @@ class _ProductDetailState extends State<ProductDetail> {
                                     ),
                                   ),
                                 ),
-                                Text("상품정보"),
                                 Container(
+                                  padding: EdgeInsets.only(top: 12, left: 22),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "상품정보",
+                                        style: TextStyle(
+                                            fontFamily: 'NotoSansCJKkr',
+                                            fontSize: 14,
+                                            color: Color(0xFF384230)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.zero,
                                   decoration: BoxDecoration(
                                       border: Border(
                                           top: BorderSide(
-                                              color: Color(0xFF384230),
-                                              style: BorderStyle.solid,
-                                              width: 1))),
+                                    color: Color(0xFF384230),
+                                    style: BorderStyle.solid,
+                                    width: 1,
+                                  ))),
                                   child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Text("상품번호"),
-                                            Text("C358905521")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [Text("소재"), Text("아크릴")],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("제조사"),
-                                            Text("vinarc")
-                                          ],
-                                        )
+                                        _detailRow(
+                                            '상품번호',
+                                            productDetail.productNumber
+                                                .toString()),
+                                        _detailRow('주재료',
+                                            productDetail.productMainMaterial),
+                                        _detailRow('소재',
+                                            productDetail.productComponents),
+                                        _detailRow(
+                                            '제조국',
+                                            productDetail
+                                                .productCountryOfManufactor),
+                                        _detailRow('제조사',
+                                            productDetail.productManufactor),
+                                        _detailRow('제조자',
+                                            productDetail.productResponsible),
+                                        _detailRow(
+                                            '제조자 연락처',
+                                            productDetail
+                                                .productResponsiblePhone),
+                                        _detailRow(
+                                            '예상 배송기간',
+                                            productDetail
+                                                .estimatedDeliveryDate),
+                                        _detailRow('제품 보증기간',
+                                            productDetail.productAssurance)
                                       ]),
                                   margin: EdgeInsets.all(22),
                                 ),
@@ -678,16 +686,20 @@ class _ProductDetailState extends State<ProductDetail> {
     return relatedProductList;
   }
 
-  Future<dynamic> _getProductDetail(productNumber) async {
+  Future<dynamic> _getProductInfo(productNumber) async {
     final detailImage = await _getProductDetailImages(productNumber);
     final materialAndColor = await _getProductMaterialAndColor(productNumber);
     final product = await _getProduct(productNumber);
     final relatedProduct = await _getRelatedProduct(productNumber);
+    final productDetail = await _getProductDetail(productNumber);
+    final productReview = await _getProductReview(productNumber);
     return {
       'detailImage': detailImage,
       'materialAndColor': materialAndColor,
       'product': product,
-      'relatedProduct': relatedProduct
+      'productDetail': productDetail,
+      'relatedProduct': relatedProduct,
+      'productReview': productReview
     };
   }
 
@@ -732,6 +744,35 @@ class _ProductDetailState extends State<ProductDetail> {
       return product;
     } else {
       throw Exception("상품을 등록해주세요");
+    }
+  }
+
+  Future<ProductDetailGet> _getProductDetail(productNumber) async {
+    final response = await http.get(Uri.parse(
+        'https://flyingstone.me/myapi/product/detail?productNumber=' +
+            productNumber));
+    if (response.statusCode == 200) {
+      ProductDetailGet productDetail =
+          ProductDetailGet.fromJson(json.decode(response.body));
+      return productDetail;
+    } else {
+      throw Exception("상품 필수요건이 등록되지 않았습니다.");
+    }
+  }
+
+  Future<List<ProductReviewGet>> _getProductReview(productNumber) async {
+    //사용자 정보가 확실히 있지만 보낼 때는 상품번호만 보내기 때문에 크게 상관없다
+    final response = await http.get(Uri.parse(
+        "https://flyingstone.me/myapi/product/review?productNumber=" +
+            productNumber));
+    List<ProductReviewGet> productReviewList = [];
+    if (response.statusCode == 200) {
+      for (var item in json.decode(response.body)) {
+        productReviewList.add(ProductReviewGet.fromJson(item));
+      }
+      return productReviewList;
+    } else {
+      throw Exception("리뷰가 없습니다.");
     }
   }
 
@@ -831,6 +872,8 @@ class _ProductDetailState extends State<ProductDetail> {
                 }
               }
             });
+            Scrollable.ensureVisible(key.currentContext!,
+                duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
           }),
           child: Text(
             title,
@@ -981,7 +1024,24 @@ class _ProductDetailState extends State<ProductDetail> {
     return content[pressedButtonIndex];
   }
 
-  void _startScrolled() {
-    //여기서는 true false만 나눠주기
+  Widget _detailRow(String rowName, String content) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 22.0, top: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(rowName,
+              style: TextStyle(
+                  fontFamily: 'NotoSansCJKkr',
+                  fontSize: 11,
+                  color: Color(0xFF384230))),
+          Text(content,
+              style: TextStyle(
+                  fontFamily: 'NotoSansCJKkr',
+                  fontSize: 11,
+                  color: Color(0xFF676F61)))
+        ],
+      ),
+    );
   }
 }

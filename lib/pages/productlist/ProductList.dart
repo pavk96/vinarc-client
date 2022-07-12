@@ -239,7 +239,7 @@ class _ProductListState extends State<ProductList> {
           Padding(
             padding: EdgeInsets.only(top: 10),
             child: Text(
-              productData[index].productPrice.toString(),
+              productData[index].productPrice.toString() + '원',
               style:
                   GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.bold),
             ),

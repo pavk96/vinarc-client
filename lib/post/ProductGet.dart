@@ -1,6 +1,3 @@
-import 'package:flutter/rendering.dart';
-import 'package:http/http.dart';
-
 class ProductGet {
   final int productNumber;
   final int shippingFee;
