@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:footer/footer.dart';
@@ -157,7 +159,7 @@ class _ProductDetailState extends State<ProductDetail> {
                     key.currentContext!.findRenderObject() as RenderBox;
                 Offset position = box.localToGlobal(Offset.zero);
                 double y = position.dy;
-                if (y < 0) {
+                if (y < 10) {
                   //not static but container's offset top
                   //Y는 Globalkey로부터 생성된 Offset이고 이걸 기준으로 0점을 만들고 그 아래로 내려가면 네브바가 안보이게 된다.
                   //이때부터 고정시켜주면 된다.
@@ -406,7 +408,6 @@ class _ProductDetailState extends State<ProductDetail> {
                             options: CarouselOptions(
                               viewportFraction: 0.3,
                               enableInfiniteScroll: false,
-                              initialPage: 1,
                               disableCenter: false,
                             ),
                             carouselController: relatedProductController,
@@ -532,7 +533,8 @@ class _ProductDetailState extends State<ProductDetail> {
                                               child: _content(
                                                   pressedButtonIndex,
                                                   productReview,
-                                                  productQna)),
+                                                  productQna,
+                                                  productDetail)),
                                         ),
                                       ),
                                     ],
@@ -709,6 +711,7 @@ class _ProductDetailState extends State<ProductDetail> {
 
   Future<dynamic> _getProductInfo(productNumber) async {
     final detailImage = await _getProductDetailImages(productNumber);
+
     final materialAndColor = await _getProductMaterialAndColor(productNumber);
     final product = await _getProduct(productNumber);
     final relatedProduct = await _getRelatedProduct(productNumber);
@@ -926,10 +929,11 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   Widget _content(pressedButtonIndex, List<ProductReviewGet> productReview,
-      List<ProductQnaGet> productQna) {
+      List<ProductQnaGet> productQna, ProductDetailGet productDetail) {
     List<Widget> content = [
       Image.network(
-        'https://vinarc.s3.ap-northeast-2.amazonaws.com/new/detailimage.png',
+        'https://vinarc.s3.ap-northeast-2.amazonaws.com' +
+            productDetail.productDetailImageUrl,
         width: double.infinity,
         fit: BoxFit.cover,
         alignment: Alignment.topCenter,
